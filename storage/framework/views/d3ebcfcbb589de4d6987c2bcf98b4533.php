@@ -1,12 +1,11 @@
-@extends('layouts.app')
-@section('title', 'Tambah Anggota')
-@section('content')
+<?php $__env->startSection('title', 'Tambah Anggota'); ?>
+<?php $__env->startSection('content'); ?>
 
-@include('partials.page-header', [
+<?php echo $__env->make('partials.page-header', [
     'icon'  => 'fa-user-plus',
     'title' => 'Tambah Anggota',
     'desc'  => 'Daftarkan anggota baru perpustakaan.',
-])
+], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <div x-data="{
         tab: 'manual',
@@ -23,7 +22,7 @@
         async loadTahun() {
             this.loading = true; this.error = '';
             try {
-                const res = await fetch('{{ route('members.datacenter.tahunAjaran') }}', { headers: { 'X-CSRF-TOKEN': this.csrf } });
+                const res = await fetch('<?php echo e(route('members.datacenter.tahunAjaran')); ?>', { headers: { 'X-CSRF-TOKEN': this.csrf } });
                 const d = await res.json();
                 if (!res.ok) { this.error = d.message || 'Gagal memuat data Tahun Ajaran.'; return; }
                 this.tahunList = d.data;
@@ -35,7 +34,7 @@
             if (!this.tahunAjaranId) return;
             this.loading = true; this.error = '';
             try {
-                const res = await fetch('{{ route('members.datacenter.rombel') }}?tahun_ajaran_id=' + this.tahunAjaranId, { headers: { 'X-CSRF-TOKEN': this.csrf } });
+                const res = await fetch('<?php echo e(route('members.datacenter.rombel')); ?>?tahun_ajaran_id=' + this.tahunAjaranId, { headers: { 'X-CSRF-TOKEN': this.csrf } });
                 const d = await res.json();
                 if (!res.ok) { this.error = d.message || 'Gagal memuat data Kelas.'; return; }
                 this.rombelList = d.data;
@@ -47,7 +46,7 @@
             if (!this.rombelId) return;
             this.loading = true; this.error = '';
             try {
-                const res = await fetch('{{ route('members.datacenter.siswa') }}?rombel_id=' + this.rombelId, { headers: { 'X-CSRF-TOKEN': this.csrf } });
+                const res = await fetch('<?php echo e(route('members.datacenter.siswa')); ?>?rombel_id=' + this.rombelId, { headers: { 'X-CSRF-TOKEN': this.csrf } });
                 const d = await res.json();
                 if (!res.ok) { this.error = d.message || 'Gagal memuat daftar siswa.'; return; }
                 this.siswaList = d.data;
@@ -75,9 +74,9 @@
         </button>
     </div>
 
-    {{-- Tab: Manual --}}
+    
     <div class="card max-w-3xl" x-show="tab === 'manual'">
-        <form method="POST" action="{{ route('members.store') }}">@csrf
+        <form method="POST" action="<?php echo e(route('members.store')); ?>"><?php echo csrf_field(); ?>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Nama</label><input name="name" required class="form-input mt-1"></div>
                 <div><label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Email</label><input type="email" name="email" required class="form-input mt-1"></div>
@@ -99,17 +98,17 @@
             </div>
             <div class="flex flex-wrap gap-2 mt-6">
                 <button class="btn-primary"><i class="fas fa-check"></i> Simpan</button>
-                <a href="{{ route('members.index') }}" class="btn-secondary">Batal</a>
+                <a href="<?php echo e(route('members.index')); ?>" class="btn-secondary">Batal</a>
             </div>
         </form>
     </div>
 
-    {{-- Tab: Dari Data Center --}}
+    
     <div class="card max-w-3xl" x-show="tab === 'datacenter'" x-cloak>
         <div x-show="error" class="badge-red mb-4 block py-2 px-3"><i class="fas fa-exclamation-circle"></i> <span x-text="error"></span></div>
         <div x-show="loading" class="text-sm text-slate-500 mb-4"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>
 
-        <form method="POST" action="{{ route('members.datacenter.import') }}">@csrf
+        <form method="POST" action="<?php echo e(route('members.datacenter.import')); ?>"><?php echo csrf_field(); ?>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Tahun Ajaran</label>
@@ -168,9 +167,11 @@
                 <button class="btn-primary" :disabled="selected.length === 0" :class="{ 'opacity-50': selected.length === 0 }">
                     <i class="fas fa-check"></i> Tambahkan <span x-text="selected.length"></span> Anggota
                 </button>
-                <a href="{{ route('members.index') }}" class="btn-secondary">Batal</a>
+                <a href="<?php echo e(route('members.index')); ?>" class="btn-secondary">Batal</a>
             </div>
         </form>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\web\Perpus\resources\views/members/create.blade.php ENDPATH**/ ?>

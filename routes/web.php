@@ -11,10 +11,12 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\StudentLoginController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DatacenterImportController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\FineController;
 use App\Http\Controllers\MemberController;
@@ -55,6 +57,9 @@ Route::get('/up', fn () => response()->json(['status' => 'ok', 'time' => now()->
 Route::middleware('guest')->group(function () {
     Route::get('/login',    [LoginController::class, 'show'])->name('login');
     Route::post('/login',   [LoginController::class, 'login'])->middleware('throttle:login');
+
+    Route::get('/login/siswa',  [StudentLoginController::class, 'show'])->name('login.siswa');
+    Route::post('/login/siswa', [StudentLoginController::class, 'login'])->middleware('throttle:login');
 
     Route::get('/register', [RegisterController::class, 'show'])->name('register');
     Route::post('/register',[RegisterController::class, 'register'])->middleware('throttle:6,1');
@@ -168,6 +173,14 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::get('/import/form',    [MemberController::class, 'importForm'])->middleware('permission:member.create')->name('import.form');
         Route::post('/import',        [MemberController::class, 'import'])->middleware('permission:member.create')->name('import');
         Route::get('/export/{format}',[MemberController::class, 'export'])->middleware('permission:member.view')->whereIn('format', ['xlsx','csv'])->name('export');
+    });
+
+    // Tambah Anggota dari Data Center (Tahun Ajaran -> Kelas -> pilih siswa)
+    Route::prefix('members/datacenter')->name('members.datacenter.')->middleware('permission:member.create')->group(function () {
+        Route::get('tahun-ajaran', [DatacenterImportController::class, 'tahunAjaran'])->name('tahunAjaran');
+        Route::get('rombel',       [DatacenterImportController::class, 'rombel'])->name('rombel');
+        Route::get('siswa',        [DatacenterImportController::class, 'siswa'])->name('siswa');
+        Route::post('import',      [DatacenterImportController::class, 'import'])->name('import');
     });
 
     // E-Book management (upload/edit) — terpisah dari reader
