@@ -1,45 +1,63 @@
 @extends('layouts.app')
 @section('title', 'Manajemen Buku')
 @section('content')
-<div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Manajemen Buku</h1>
-    @can('book.create')<a href="{{ route('books.create') }}" class="btn-primary">+ Buku Baru</a>@endcan
-</div>
+@include('partials.page-header', [
+    'icon'  => 'fa-book',
+    'title' => 'Manajemen Buku',
+    'desc'  => 'Kelola koleksi buku digital perpustakaan.',
+    'actions' => [
+        ['url' => route('books.create'), 'label' => 'Buku Baru', 'class' => 'btn-primary', 'icon' => 'fa-plus', 'can' => 'book.create'],
+    ],
+])
 
-<form class="card mb-4 flex flex-wrap gap-3" method="get">
-    <input name="q" value="{{ request('q') }}" placeholder="Cari judul/ISBN..." class="form-input flex-1 min-w-48">
-    <select name="status" class="form-input w-40">
-        <option value="">Semua status</option>
-        @foreach(['available','borrowed','reserved','maintenance','lost'] as $s)<option value="{{ $s }}" @selected(request('status')===$s)>{{ $s }}</option>@endforeach
-    </select>
-    <button class="btn-secondary">Filter</button>
+<form class="card mb-6" method="get">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+        <div class="md:col-span-7 relative">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input name="q" value="{{ request('q') }}" placeholder="Cari judul/ISBN..." class="form-input pl-10">
+        </div>
+        <select name="status" class="form-input md:col-span-3">
+            <option value="">Semua status</option>
+            @foreach(['available','borrowed','reserved','maintenance','lost'] as $s)<option value="{{ $s }}" @selected(request('status')===$s)>{{ $s }}</option>@endforeach
+        </select>
+        <button class="btn-secondary md:col-span-2"><i class="fas fa-filter"></i> Filter</button>
+    </div>
 </form>
 
 <div class="card overflow-x-auto">
-<table class="min-w-full text-sm">
-    <thead class="bg-gray-50 dark:bg-gray-700/40">
-        <tr><th class="px-3 py-2 text-left">Judul</th><th class="px-3 py-2 text-left">ISBN</th><th class="px-3 py-2 text-left">Kategori</th><th class="px-3 py-2 text-left">Stok</th><th class="px-3 py-2 text-left">Status</th><th></th></tr>
+<table class="table-pretty">
+    <thead>
+        <tr><th>Judul</th><th>ISBN</th><th>Kategori</th><th>Stok</th><th>Status</th><th class="text-right">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse($books as $b)
-        <tr class="border-t border-gray-100 dark:border-gray-700">
-            <td class="px-3 py-2"><a href="{{ route('books.show', $b) }}" class="font-medium text-primary-600 hover:underline">{{ $b->title }}</a><br><span class="text-xs text-gray-500">{{ $b->authors->pluck('name')->join(', ') }}</span></td>
-            <td class="px-3 py-2 font-mono">{{ $b->isbn }}</td>
-            <td class="px-3 py-2">{{ $b->category?->name }}</td>
-            <td class="px-3 py-2">{{ $b->available }}/{{ $b->stock }}</td>
-            <td class="px-3 py-2"><span class="badge-{{ $b->status === 'available' ? 'green' : 'yellow' }}">{{ $b->status }}</span></td>
-            <td class="px-3 py-2 text-right whitespace-nowrap">
-                @can('book.update')<a href="{{ route('books.edit', $b) }}" class="text-primary-600">Edit</a>@endcan
-                @can('book.delete')
-                    <form action="{{ route('books.destroy', $b) }}" method="POST" class="inline ml-2" onsubmit="return confirm('Hapus buku ini?')">@csrf @method('DELETE')<button class="text-red-600">Hapus</button></form>
-                @endcan
+        <tr>
+            <td><a href="{{ route('books.show', $b) }}" class="font-medium text-primary-600 hover:underline">{{ $b->title }}</a><br><span class="text-xs text-slate-500">{{ $b->authors->pluck('name')->join(', ') }}</span></td>
+            <td class="font-mono text-xs">{{ $b->isbn }}</td>
+            <td>{{ $b->category?->name }}</td>
+            <td>{{ $b->available }}/{{ $b->stock }}</td>
+            <td><span class="badge-{{ $b->status === 'available' ? 'green' : 'yellow' }}">{{ $b->status }}</span></td>
+            <td class="text-right whitespace-nowrap">
+                <div class="inline-flex gap-1">
+                    @can('book.update')
+                    <a href="{{ route('books.edit', $b) }}" class="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 text-primary-600" title="Edit"><i class="fas fa-pen"></i></a>
+                    @endcan
+                    @can('book.delete')
+                    <form action="{{ route('books.destroy', $b) }}" method="POST" onsubmit="return confirm('Hapus buku ini?')">@csrf @method('DELETE')
+                        <button class="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-slate-700 text-red-600" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </form>
+                    @endcan
+                </div>
             </td>
         </tr>
     @empty
-        <tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">Belum ada data buku.</td></tr>
+        <tr><td colspan="6" class="text-center text-slate-500 py-10">
+            <i class="fas fa-inbox text-3xl mb-2 block text-slate-300"></i>
+            Belum ada data buku.
+        </td></tr>
     @endforelse
     </tbody>
 </table>
-<div class="mt-4">{{ $books->links() }}</div>
+<div class="mt-4 px-2">{{ $books->links() }}</div>
 </div>
 @endsection

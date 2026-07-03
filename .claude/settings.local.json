@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:/laragon/www/Aplikasi Perpus/\")",
+      "Bash(ls -la \"C:/laragon/www/\" | head -50)",
+      "Bash(echo \"=== Search for other perpus/library Laravel projects ===\" && find \"C:/laragon/www\" \"C:/Users/humam/Desktop\" \"C:/Users/humam/Documents\" -maxdepth 3 -type d \\\\\\( -iname \"*perpus*\" -o -iname \"*library*\" -o -iname \"*perpustakaan*\" \\\\\\) 2>/dev/null | grep -v node_modules | grep -v vendor | head -30)"
+    ]
+  }
+}

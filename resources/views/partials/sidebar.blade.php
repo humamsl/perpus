@@ -1,21 +1,23 @@
 <aside
-    class="fixed inset-y-0 left-0 z-40 flex flex-col bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 transition-all duration-200 shadow-lg md:shadow-none"
+    class="app-sidebar fixed inset-y-0 left-0 z-40 flex flex-col text-slate-300 transition-transform duration-200 shadow-2xl md:shadow-none
+           bg-gradient-to-b from-[#15122b] via-[#13112a] to-[#0d0b1d]"
     :class="{
-        'w-64': $store.sidebar.open,
-        'w-16': !$store.sidebar.open,
+        'is-sidebar-open': $store.sidebar.open,
         '-translate-x-full md:translate-x-0': !$store.sidebar.mobileOpen,
         'translate-x-0': $store.sidebar.mobileOpen,
     }">
-    <div class="flex items-center h-16 px-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-primary-600 to-primary-700">
-        <div class="flex items-center gap-3 text-white">
-            <div class="h-9 w-9 rounded-lg bg-white text-primary-600 flex items-center justify-center font-bold text-lg shadow">
+    {{-- Brand --}}
+    <div class="flex items-center h-16 px-4 border-b border-white/5">
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shrink-0"
+                 style="background-image:linear-gradient(135deg,#8b5cf6,#6d28d9)">
                 <i class="fas fa-book-open-reader"></i>
             </div>
-            <div x-show="$store.sidebar.open" x-cloak>
-                <p class="font-bold text-base leading-tight">PerpusDigital</p>
-                <p class="text-[10px] opacity-90">Spot Baca Platform</p>
+            <div x-show="$store.sidebar.open" x-cloak class="leading-tight">
+                <p class="font-display font-extrabold text-base text-white tracking-tight">Pustaka<span class="text-primary-400">Digital</span></p>
+                <p class="text-[10px] text-slate-400">Library Management</p>
             </div>
-        </div>
+        </a>
     </div>
 
     <nav class="flex-1 overflow-y-auto py-3 text-sm">
@@ -55,10 +57,10 @@
             ];
         @endphp
         @foreach($sections as $section => $links)
-            <div class="px-4 pt-4 pb-1 text-[10px] font-bold uppercase text-slate-400 tracking-widest" x-show="$store.sidebar.open" x-cloak>
+            <p class="px-5 pt-4 pb-1 text-[10px] font-bold uppercase text-slate-500 tracking-[0.15em]" x-show="$store.sidebar.open" x-cloak>
                 {{ $section }}
-            </div>
-            <div x-show="!$store.sidebar.open" x-cloak class="border-t border-slate-200 dark:border-slate-700 my-2 mx-3"></div>
+            </p>
+            <div x-show="!$store.sidebar.open" x-cloak class="border-t border-white/5 my-2 mx-3"></div>
             @foreach($links as $l)
                 @if(empty($l['perm']) || auth()->user()->can($l['perm']))
                     @php
@@ -66,14 +68,16 @@
                         $url = \Illuminate\Support\Facades\Route::has($l['route']) ? route($l['route']) : '#';
                     @endphp
                     <a href="{{ $url }}"
-                       class="group flex items-center gap-3 px-4 py-2.5 mx-2 my-0.5 rounded-lg transition
+                       class="group relative flex items-center gap-3 px-3 py-2.5 mx-2.5 my-0.5 rounded-xl transition-all
                               {{ $active
-                                 ? 'bg-primary-600 text-white shadow-soft'
-                                 : 'text-slate-700 dark:text-slate-200 hover:bg-primary-50 dark:hover:bg-slate-700' }}"
+                                 ? 'text-white shadow-lg'
+                                 : 'text-slate-300 hover:bg-white/5 hover:text-white' }}"
+                       @if($active) style="background-image:linear-gradient(135deg,rgba(139,92,246,.95),rgba(109,40,217,.95))" @endif
                        :class="!$store.sidebar.open && 'justify-center'"
                        title="{{ $l['label'] }}">
-                        <i class="{{ $l['icon'] }} w-5 text-center shrink-0 {{ $active ? '' : 'text-primary-600 dark:text-primary-400' }}"></i>
-                        <span x-show="$store.sidebar.open" x-cloak class="truncate">{{ $l['label'] }}</span>
+                        @if($active)<span class="absolute -left-2.5 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-primary-400"></span>@endif
+                        <i class="{{ $l['icon'] }} w-5 text-center shrink-0 {{ $active ? 'text-white' : 'text-primary-300/80 group-hover:text-primary-300' }}"></i>
+                        <span x-show="$store.sidebar.open" x-cloak class="truncate font-medium">{{ $l['label'] }}</span>
                     </a>
                 @endif
             @endforeach
@@ -81,8 +85,8 @@
     </nav>
 
     {{-- Footer mini sidebar --}}
-    <div class="px-4 py-3 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500" x-show="$store.sidebar.open" x-cloak>
-        <p class="font-semibold">v1.0.0</p>
-        <p>&copy; {{ date('Y') }} PerpusDigital</p>
+    <div class="px-5 py-3 border-t border-white/5 text-xs text-slate-500" x-show="$store.sidebar.open" x-cloak>
+        <p class="font-semibold text-slate-400">PustakaDigital v1.0</p>
+        <p>&copy; {{ date('Y') }} — All rights reserved</p>
     </div>
 </aside>

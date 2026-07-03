@@ -87,7 +87,12 @@ class BorrowService
                 Fine::create([
                     'member_id'             => $tx->member_id,
                     'borrow_transaction_id' => $tx->id,
-                    'type'                  => $condition === 'good' ? 'late' : $condition,
+                    // Petakan kondisi pengembalian -> enum fines.type ('late','damage','lost','other').
+                    'type'                  => match ($condition) {
+                        'damaged' => 'damage',
+                        'lost'    => 'lost',
+                        default   => 'late',
+                    },
                     'amount'                => $fineAmount,
                     'description'           => $this->fineLabel($daysLate, $condition),
                 ]);

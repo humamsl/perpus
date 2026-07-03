@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "digital-library",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["artisan", "serve", "--host=127.0.0.1", "--port=8234"],
+      "port": 8234
+    }
+  ]
+}

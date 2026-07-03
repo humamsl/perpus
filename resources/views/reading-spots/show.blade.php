@@ -1,62 +1,68 @@
 @extends('layouts.app')
 @section('title', $readingSpot->name)
 @section('content')
-<div class="flex justify-between items-start mb-4">
-    <div>
-        <h1 class="text-2xl font-bold">{{ $readingSpot->name }}</h1>
-        <p class="text-sm text-gray-500">{{ ucfirst($readingSpot->type) }} · {{ $readingSpot->city ?: '-' }}</p>
-    </div>
-    <div class="space-x-2">
-        @can('setting.manage')<a href="{{ route('app-profiles.edit', $readingSpot) }}" class="btn-secondary">Branding</a>@endcan
-        @can('setting.manage')<a href="{{ route('reading-spots.edit', $readingSpot) }}" class="btn-primary">Edit</a>@endcan
-    </div>
-</div>
+
+@include('partials.page-header', [
+    'icon'  => 'fa-map-location-dot',
+    'title' => $readingSpot->name,
+    'desc'  => ucfirst($readingSpot->type) . ' · ' . ($readingSpot->city ?: '-'),
+    'actions' => [
+        ['url' => route('app-profiles.edit', $readingSpot), 'label' => 'Branding', 'class' => 'btn-secondary', 'icon' => 'fa-palette', 'can' => 'setting.manage'],
+        ['url' => route('reading-spots.edit', $readingSpot), 'label' => 'Edit', 'class' => 'btn-primary', 'icon' => 'fa-pen', 'can' => 'setting.manage'],
+    ],
+])
 
 <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
     @php $cards = [
-        ['Anggota', $stats['members'], 'bg-blue-600'],
-        ['Buku Digital', $stats['books'], 'bg-primary-600'],
-        ['Buku Fisik', $stats['offline_books'], 'bg-green-600'],
-        ['Kopi Fisik', $stats['offline_copies'], 'bg-emerald-600'],
-        ['Hold Aktif', $stats['active_holds'], 'bg-yellow-600'],
-        ['Checkout', $stats['active_checkouts'], 'bg-purple-600'],
+        ['Anggota', $stats['members'], 'fa-users', 'blue'],
+        ['Buku Digital', $stats['books'], 'fa-book', 'primary'],
+        ['Buku Fisik', $stats['offline_books'], 'fa-book-open', 'green'],
+        ['Kopi Fisik', $stats['offline_copies'], 'fa-layer-group', 'green'],
+        ['Hold Aktif', $stats['active_holds'], 'fa-clock', 'yellow'],
+        ['Checkout', $stats['active_checkouts'], 'fa-right-left', 'purple'],
     ]; @endphp
-    @foreach($cards as [$label,$value,$color])
-        <div class="card text-center">
-            <div class="h-6 w-6 rounded {{ $color }} mx-auto mb-2"></div>
-            <p class="text-xs text-gray-500">{{ $label }}</p>
-            <p class="text-xl font-bold">{{ $value }}</p>
+    @foreach($cards as [$label,$value,$icon,$color])
+        <div class="card-tight text-center">
+            <div class="h-9 w-9 rounded-lg bg-{{ $color }}-100 text-{{ $color }}-700 dark:bg-{{ $color }}-900/40 dark:text-{{ $color }}-300 mx-auto mb-2 flex items-center justify-center">
+                <i class="fas {{ $icon }} text-sm"></i>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ $label }}</p>
+            <p class="text-xl font-bold text-slate-800 dark:text-slate-100">{{ $value }}</p>
         </div>
     @endforeach
 </div>
 
 <div class="grid md:grid-cols-2 gap-6">
     <div class="card">
-        <h2 class="font-semibold mb-3">Informasi</h2>
+        <h2 class="font-bold text-lg mb-3">Informasi</h2>
         <dl class="text-sm space-y-1">
-            <div class="flex justify-between"><dt class="text-gray-500">Slug</dt><dd class="font-mono">{{ $readingSpot->slug }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">NPSN</dt><dd>{{ $readingSpot->npsn ?: '-' }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Telepon</dt><dd>{{ $readingSpot->phone ?: '-' }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Email</dt><dd>{{ $readingSpot->email ?: '-' }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Status</dt><dd>{{ $readingSpot->is_active ? 'Aktif' : 'Nonaktif' }}</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Slug</dt><dd class="font-mono">{{ $readingSpot->slug }}</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">NPSN</dt><dd>{{ $readingSpot->npsn ?: '-' }}</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Telepon</dt><dd>{{ $readingSpot->phone ?: '-' }}</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Email</dt><dd>{{ $readingSpot->email ?: '-' }}</dd></div>
+            <div class="flex justify-between py-1"><dt class="text-slate-500 dark:text-slate-400">Status</dt><dd>
+                @if($readingSpot->is_active)<span class="badge-green">Aktif</span>@else<span class="badge-red">Nonaktif</span>@endif
+            </dd></div>
         </dl>
         @if($readingSpot->address)
-            <hr class="my-3 border-gray-200 dark:border-gray-700">
-            <p class="text-sm">{{ $readingSpot->address }}</p>
+            <hr class="my-3 border-slate-200 dark:border-slate-700">
+            <p class="text-sm text-slate-600 dark:text-slate-300"><i class="fas fa-location-dot text-primary-600 mr-1"></i>{{ $readingSpot->address }}</p>
         @endif
     </div>
     <div class="card">
-        <h2 class="font-semibold mb-3">Aturan Peminjaman</h2>
+        <h2 class="font-bold text-lg mb-3">Aturan Peminjaman</h2>
         @php $cs = $readingSpot->checkoutSetting; @endphp
         @if($cs)
         <dl class="text-sm space-y-1">
-            <div class="flex justify-between"><dt class="text-gray-500">Lama pinjam</dt><dd>{{ $cs->loan_days }} hari</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Maks per anggota</dt><dd>{{ $cs->max_books }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Denda harian</dt><dd>Rp {{ number_format($cs->daily_fine,0,',','.') }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Denda kerusakan</dt><dd>Rp {{ number_format($cs->damage_fine,0,',','.') }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Denda hilang</dt><dd>Rp {{ number_format($cs->lost_fine,0,',','.') }}</dd></div>
-            <div class="flex justify-between"><dt class="text-gray-500">Hold expires</dt><dd>{{ $cs->hold_expires_hours }} jam</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Lama pinjam</dt><dd>{{ $cs->loan_days }} hari</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Maks per anggota</dt><dd>{{ $cs->max_books }}</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Denda harian</dt><dd>Rp {{ number_format($cs->daily_fine,0,',','.') }}</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Denda kerusakan</dt><dd>Rp {{ number_format($cs->damage_fine,0,',','.') }}</dd></div>
+            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700"><dt class="text-slate-500 dark:text-slate-400">Denda hilang</dt><dd>Rp {{ number_format($cs->lost_fine,0,',','.') }}</dd></div>
+            <div class="flex justify-between py-1"><dt class="text-slate-500 dark:text-slate-400">Hold expires</dt><dd>{{ $cs->hold_expires_hours }} jam</dd></div>
         </dl>
+        @else
+            <p class="text-sm text-slate-500 text-center py-6"><i class="fas fa-inbox text-2xl mb-2 block text-slate-300"></i>Belum ada aturan peminjaman.</p>
         @endif
     </div>
 </div>

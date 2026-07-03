@@ -19,8 +19,9 @@ class FineController extends Controller
     public function mine()
     {
         $member = auth()->user()->member;
-        $rows = $member ? $member->fines()->with('borrow.book')->latest()->paginate(20)
-                        : collect();
+        $rows = $member
+            ? $member->fines()->with('borrow.book')->latest()->paginate(20)
+            : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
         return view('fines.index', ['rows' => $rows]);
     }
 

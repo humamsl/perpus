@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             ReadingSpotSeeder::class,
             DemoUserSeeder::class,
             BookSeeder::class,
+            DemoDataSeeder::class,
         ]);
     }
 }

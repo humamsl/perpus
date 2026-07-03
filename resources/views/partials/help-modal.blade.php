@@ -19,7 +19,7 @@
         </label>
         <button type="button"
                 @click="openHelp = true"
-                class="h-5 w-5 rounded-full bg-gray-200 dark:bg-gray-700 text-xs text-gray-700 dark:text-gray-200 hover:bg-primary-500 hover:text-white transition"
+                class="h-5 w-5 rounded-full bg-slate-200 dark:bg-slate-700 text-xs text-slate-700 dark:text-slate-200 hover:bg-primary-500 hover:text-white transition"
                 aria-label="Bantuan {{ $label }}">?</button>
     </div>
 
@@ -38,14 +38,14 @@
          @click.self="openHelp = false">
         <div x-show="openHelp"
              x-transition
-             class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full p-6 relative">
+             class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-lg w-full p-6 relative ring-1 ring-slate-100 dark:ring-slate-700">
             <button type="button"
                     @click="openHelp = false"
-                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl"
+                    class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl"
                     aria-label="Tutup">&times;</button>
 
-            <h3 class="text-lg font-bold mb-3">{{ $help_title ?? 'Bantuan' }}</h3>
-            <div class="text-sm text-gray-700 dark:text-gray-300 space-y-2 prose dark:prose-invert max-w-none">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">{{ $help_title ?? 'Bantuan' }}</h3>
+            <div class="text-sm text-slate-700 dark:text-slate-300 space-y-2 prose dark:prose-invert max-w-none">
                 {!! $help_body ?? '' !!}
             </div>
 

@@ -88,10 +88,14 @@ class EbookController extends Controller
     protected function canAccess(Ebook $e): bool
     {
         $u = auth()->user();
+        // Petugas/admin perpustakaan dapat mengakses seluruh koleksi.
+        if ($u?->hasAnyRole(['staff', 'admin', 'super_admin'])) {
+            return true;
+        }
         return match ($e->access) {
             'public' => true,
             'member' => (bool) ($u?->member),
-            'staff'  => $u?->hasAnyRole(['staff', 'admin', 'super_admin']) ?? false,
+            'staff'  => false,
         };
     }
 }

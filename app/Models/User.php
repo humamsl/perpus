@@ -35,7 +35,7 @@ class User extends Authenticatable
 
     public function member()    { return $this->hasOne(Member::class); }
     public function reviews()   { return $this->hasMany(Review::class); }
-    public function wishlist()  { return $this->belongsToMany(Book::class, 'wishlists')->withTimestamps(); }
+    public function wishlist()  { return $this->belongsToMany(Book::class, 'wishlists')->withPivot('created_at')->orderByPivot('created_at', 'desc'); }
     public function bookmarks() { return $this->hasMany(EbookBookmark::class); }
     public function activities(){ return $this->hasMany(ActivityLog::class); }
     public function readingSpots() {

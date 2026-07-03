@@ -1,15 +1,38 @@
 @extends('layouts.app')
 @section('title', $user->name)
 @section('content')
+
+@include('partials.page-header', [
+    'icon'  => 'fa-user',
+    'title' => $user->name,
+    'desc'  => $user->email,
+    'actions' => [
+        ['url' => route('users.edit', $user), 'label' => 'Edit', 'class' => 'btn-primary', 'icon' => 'fa-pen'],
+        ['url' => route('users.index'), 'label' => 'Kembali', 'class' => 'btn-secondary', 'icon' => 'fa-arrow-left'],
+    ],
+])
+
 <div class="card max-w-2xl">
-    <h1 class="text-xl font-bold">{{ $user->name }}</h1>
-    <p class="text-sm text-gray-500 mb-3">{{ $user->email }}</p>
-    <dl class="grid grid-cols-2 gap-2 text-sm">
-        <dt class="text-gray-500">Role</dt><dd>{{ $user->getRoleNames()->join(', ') }}</dd>
-        <dt class="text-gray-500">Aktif</dt><dd>{{ $user->is_active ? 'Ya' : 'Tidak' }}</dd>
-        <dt class="text-gray-500">Login Terakhir</dt><dd>{{ $user->last_login_at?->format('d M Y H:i') ?? '-' }}</dd>
-        <dt class="text-gray-500">IP Terakhir</dt><dd>{{ $user->last_login_ip ?? '-' }}</dd>
+    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <div>
+            <dt class="text-slate-500 dark:text-slate-400">Role</dt>
+            <dd class="font-medium mt-0.5">{{ $user->getRoleNames()->join(', ') }}</dd>
+        </div>
+        <div>
+            <dt class="text-slate-500 dark:text-slate-400">Aktif</dt>
+            <dd class="mt-0.5">
+                @if($user->is_active)<span class="badge-green"><i class="fas fa-check"></i> Ya</span>
+                @else<span class="badge-red"><i class="fas fa-xmark"></i> Tidak</span>@endif
+            </dd>
+        </div>
+        <div>
+            <dt class="text-slate-500 dark:text-slate-400">Login Terakhir</dt>
+            <dd class="font-medium mt-0.5">{{ $user->last_login_at?->format('d M Y H:i') ?? '-' }}</dd>
+        </div>
+        <div>
+            <dt class="text-slate-500 dark:text-slate-400">IP Terakhir</dt>
+            <dd class="font-medium mt-0.5 font-mono text-xs">{{ $user->last_login_ip ?? '-' }}</dd>
+        </div>
     </dl>
-    <a href="{{ route('users.edit', $user) }}" class="btn-secondary mt-4 inline-block">Edit</a>
 </div>
 @endsection

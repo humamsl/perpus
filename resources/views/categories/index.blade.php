@@ -1,25 +1,39 @@
 @extends('layouts.app')
 @section('title','Kategori')
 @section('content')
-<div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Kategori Buku</h1>
-    <a href="{{ route('categories.create') }}" class="btn-primary">+ Kategori</a>
-</div>
-<div class="card">
-<table class="min-w-full text-sm">
-<thead class="bg-gray-50 dark:bg-gray-700/40"><tr><th class="px-3 py-2 text-left">Nama</th><th class="px-3 py-2 text-left">Dewey</th><th class="px-3 py-2 text-left">Jumlah Buku</th><th></th></tr></thead>
+@include('partials.page-header', [
+    'icon'  => 'fa-layer-group',
+    'title' => 'Kategori Buku',
+    'desc'  => 'Kelola kategori klasifikasi koleksi buku.',
+    'actions' => [
+        ['url' => route('categories.create'), 'label' => 'Kategori', 'class' => 'btn-primary', 'icon' => 'fa-plus'],
+    ],
+])
+
+<div class="card overflow-x-auto">
+<table class="table-pretty">
+<thead><tr><th>Nama</th><th>Dewey</th><th>Jumlah Buku</th><th class="text-right">Aksi</th></tr></thead>
 <tbody>
-@foreach($items as $c)
-    <tr class="border-t border-gray-100 dark:border-gray-700">
-        <td class="px-3 py-2">{{ $c->name }}</td>
-        <td class="px-3 py-2">{{ $c->dewey_code }}</td>
-        <td class="px-3 py-2">{{ $c->books_count ?? 0 }}</td>
-        <td class="px-3 py-2 text-right">
-            <a href="{{ route('categories.edit', $c) }}" class="text-primary-600">Edit</a>
-            <form action="{{ route('categories.destroy', $c) }}" method="POST" class="inline ml-2" onsubmit="return confirm('Hapus?')">@csrf @method('DELETE')<button class="text-red-600">Hapus</button></form>
+@forelse($items as $c)
+    <tr>
+        <td>{{ $c->name }}</td>
+        <td>{{ $c->dewey_code }}</td>
+        <td>{{ $c->books_count ?? 0 }}</td>
+        <td class="text-right whitespace-nowrap">
+            <div class="inline-flex gap-1">
+                <a href="{{ route('categories.edit', $c) }}" class="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 text-primary-600" title="Edit"><i class="fas fa-pen"></i></a>
+                <form action="{{ route('categories.destroy', $c) }}" method="POST" onsubmit="return confirm('Hapus?')">@csrf @method('DELETE')
+                    <button class="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-slate-700 text-red-600" title="Hapus"><i class="fas fa-trash"></i></button>
+                </form>
+            </div>
         </td>
     </tr>
-@endforeach
+@empty
+    <tr><td colspan="4" class="text-center text-slate-500 py-10">
+        <i class="fas fa-inbox text-3xl mb-2 block text-slate-300"></i>
+        Belum ada kategori.
+    </td></tr>
+@endforelse
 </tbody>
 </table>
 </div>

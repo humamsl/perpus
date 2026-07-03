@@ -33,7 +33,7 @@ class Book extends Model
     public function borrows()     { return $this->hasMany(BorrowTransaction::class); }
     public function reservations(){ return $this->hasMany(Reservation::class); }
     public function reviews()     { return $this->hasMany(Review::class)->where('is_hidden', false); }
-    public function wishedBy()    { return $this->belongsToMany(User::class, 'wishlists')->withTimestamps(); }
+    public function wishedBy()    { return $this->belongsToMany(User::class, 'wishlists')->withPivot('created_at'); }
 
     public function scopeAvailable($q) { return $q->where('available', '>', 0); }
 

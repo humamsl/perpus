@@ -1,6 +1,13 @@
 @extends('layouts.app')
 @section('title','Tambah Buku Fisik')
 @section('content')
-<h1 class="text-2xl font-bold mb-4">Tambah Buku Fisik</h1>
+@include('partials.page-header', [
+    'icon'  => 'fa-plus',
+    'title' => 'Tambah Buku Fisik',
+    'desc'  => 'Tambahkan judul buku fisik baru ke koleksi.',
+    'actions' => [
+        ['url' => route('offline-books.index'), 'label' => 'Kembali', 'class' => 'btn-secondary', 'icon' => 'fa-arrow-left'],
+    ],
+])
 @include('offline-books._form', ['action' => route('offline-books.store'), 'method' => 'POST'])
 @endsection

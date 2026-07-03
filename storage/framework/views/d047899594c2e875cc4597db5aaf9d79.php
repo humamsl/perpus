@@ -1,0 +1,2 @@
+
+<?php echo $__env->make('catalog.show', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\Aplikasi Perpus\digital-library\resources\views/books/show.blade.php ENDPATH**/ ?>

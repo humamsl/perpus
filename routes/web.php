@@ -181,11 +181,15 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
     });
 
     // Peminjaman
+    // Static-segment routes MUST come before the resource so /borrows/scan is not
+    // captured by the /borrows/{borrow} (show) wildcard.
+    Route::prefix('borrows')->name('borrows.')->group(function () {
+        Route::get('/scan',    [BorrowController::class, 'scan'])->middleware('permission:borrow.create')->name('scan');
+        Route::post('/lookup', [BorrowController::class, 'lookup'])->middleware('permission:borrow.create')->name('lookup');
+    });
     Route::resource('borrows', BorrowController::class)->only(['index', 'create', 'store', 'show']);
     Route::prefix('borrows')->name('borrows.')->group(function () {
         Route::post('/{borrow}/renew',  [BorrowController::class, 'renew'])->name('renew');
-        Route::get('/scan',             [BorrowController::class, 'scan'])->middleware('permission:borrow.create')->name('scan');
-        Route::post('/lookup',          [BorrowController::class, 'lookup'])->middleware('permission:borrow.create')->name('lookup');
         Route::get('/{borrow}/receipt', [BorrowController::class, 'receipt'])->name('receipt');
     });
 
