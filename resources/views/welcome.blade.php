@@ -110,6 +110,144 @@
         </div>
     </section>
 
+    {{-- Katalog Buku Digital --}}
+    @php
+        $digitalBooks = \App\Models\Book::with(['authors', 'publisher', 'ebooks'])->latest()->take(10)->get();
+        $digitalCount = \App\Models\Book::count();
+    @endphp
+    <section class="container mx-auto px-4 pt-12">
+        <x-book-carousel
+            title="Katalog Buku Digital"
+            icon="fa-tablet-screen-button"
+            :count="$digitalCount"
+            :books="$digitalBooks"
+            :view-all-route="route('catalog.index')"
+            accent="primary"
+        />
+    </section>
+
+    {{-- Fitur Lokasi / GPS --}}
+    @php
+        $spotsGeo = \App\Models\ReadingSpot::active()
+            ->whereNotNull('latitude')->whereNotNull('longitude')
+            ->get(['id', 'name', 'city', 'latitude', 'longitude']);
+    @endphp
+    <section class="container mx-auto px-4" x-data="{
+            state: 'idle',
+            error: null,
+            result: null,
+            spots: {{ $spotsGeo->toJson() }},
+            locate() {
+                if (!navigator.geolocation) { this.state = 'error'; this.error = 'Browser tidak mendukung geolokasi.'; return; }
+                this.state = 'loading';
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const { latitude: lat, longitude: lon } = pos.coords;
+                        const toRad = d => d * Math.PI / 180;
+                        let nearest = null, minDist = Infinity;
+                        this.spots.forEach(s => {
+                            const R = 6371;
+                            const dLat = toRad(s.latitude - lat);
+                            const dLon = toRad(s.longitude - lon);
+                            const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat)) * Math.cos(toRad(s.latitude)) * Math.sin(dLon / 2) ** 2;
+                            const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                            if (dist < minDist) { minDist = dist; nearest = s; }
+                        });
+                        if (nearest) {
+                            this.state = 'found';
+                            this.result = { name: nearest.name, city: nearest.city, distance: minDist.toFixed(1) };
+                        } else {
+                            this.state = 'error';
+                            this.error = 'Belum ada spot baca dengan lokasi terdaftar.';
+                        }
+                    },
+                    () => { this.state = 'error'; this.error = 'Izin lokasi ditolak atau tidak tersedia.'; }
+                );
+            }
+        }">
+        <div class="rounded-2xl p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 transition-colors"
+             :class="{
+                'bg-red-50 ring-1 ring-red-100': state === 'idle' || state === 'loading',
+                'bg-amber-50 ring-1 ring-amber-100': state === 'error',
+                'bg-emerald-50 ring-1 ring-emerald-100': state === 'found',
+             }">
+            <div class="flex items-start gap-3">
+                <i class="fas text-2xl mt-1"
+                   :class="{
+                        'fa-location-crosshairs text-red-500': state === 'idle' || state === 'loading',
+                        'fa-triangle-exclamation text-amber-500': state === 'error',
+                        'fa-circle-check text-emerald-500': state === 'found',
+                   }"></i>
+                <div>
+                    <template x-if="state === 'idle' || state === 'loading'">
+                        <div>
+                            <p class="font-bold text-red-600">Fitur Lokasi / GPS Tidak Aktif</p>
+                            <p class="text-sm text-red-500 mt-0.5">Mohon izinkan layanan lokasi pada browser untuk menemukan reading spot terdekat.</p>
+                        </div>
+                    </template>
+                    <template x-if="state === 'found'">
+                        <div>
+                            <p class="font-bold text-emerald-700" x-text="'Spot terdekat: ' + result.name"></p>
+                            <p class="text-sm text-emerald-600 mt-0.5" x-text="(result.city || '-') + ' · sekitar ' + result.distance + ' km dari Anda'"></p>
+                        </div>
+                    </template>
+                    <template x-if="state === 'error'">
+                        <div>
+                            <p class="font-bold text-amber-700">Lokasi Tidak Tersedia</p>
+                            <p class="text-sm text-amber-600 mt-0.5" x-text="error"></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <button @click="locate()" x-show="state !== 'found'" :disabled="state === 'loading'" class="btn-danger">
+                <i class="fas fa-location-dot" :class="{ 'fa-spin fa-spinner': state === 'loading', 'fa-location-dot': state !== 'loading' }"></i>
+                <span x-text="state === 'loading' ? 'Mencari lokasi...' : 'Izinkan Lokasi'"></span>
+            </button>
+        </div>
+    </section>
+
+    {{-- Kategori Buku Digital --}}
+    @php
+        $catPalette = ['bg-amber-500', 'bg-emerald-500', 'bg-primary-500', 'bg-rose-500', 'bg-cyan-600', 'bg-orange-500', 'bg-fuchsia-600', 'bg-lime-600'];
+        $topCategories = \App\Models\BookCategory::withCount('books')->orderByDesc('books_count')->take(8)->get();
+    @endphp
+    @if($topCategories->count())
+    <section class="container mx-auto px-4 mt-8">
+        <div class="rounded-2xl bg-gradient-to-r from-primary-600 to-primary-800 p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-white font-bold flex items-center gap-2"><i class="fas fa-list"></i> Kategori Buku Digital</h3>
+                <a href="{{ route('catalog.index') }}" class="bg-white/15 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-white/25">selengkapnya</a>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                @foreach($topCategories as $i => $cat)
+                    <a href="{{ route('catalog.index', ['category' => $cat->id]) }}"
+                       class="{{ $catPalette[$i % count($catPalette)] }} text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition">
+                        {{ $cat->name }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    {{-- Katalog Buku Fisik --}}
+    @php
+        $fisikBooks = \App\Models\OfflineBook::with(['authors', 'publisher'])->latest()->take(10)->get();
+        $fisikCount = \App\Models\OfflineBook::count();
+    @endphp
+    @if($fisikCount > 0)
+    <section class="container mx-auto px-4 mt-8">
+        <x-book-carousel
+            title="Katalog Buku Fisik"
+            icon="fa-book"
+            :count="$fisikCount"
+            :books="$fisikBooks"
+            :view-all-route="route('catalog.index')"
+            accent="teal"
+        />
+    </section>
+    @endif
+
     {{-- Fitur --}}
     <section id="fitur" class="container mx-auto px-4 py-16">
         <div class="text-center mb-12">
