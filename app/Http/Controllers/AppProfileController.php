@@ -41,6 +41,7 @@ class AppProfileController extends Controller
             }
         }
         $profile->update($data);
+        AppProfile::forgetCache();
         return back()->with('toast', 'Profil aplikasi diperbarui.');
     }
 }

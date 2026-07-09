@@ -1,16 +1,20 @@
 @extends('layouts.app')
-@section('title', config('app.name'))
+@section('title', $appProfile->app_name ?? config('app.name'))
 @section('content')
 <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
     {{-- Header publik --}}
     <header class="bg-gradient-to-r from-primary-600 to-primary-800 text-white sticky top-0 z-30 shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-lg bg-white text-primary-600 flex items-center justify-center text-xl shadow">
-                    <i class="fas fa-book-open-reader"></i>
-                </div>
+                @if(!empty($appProfile->logo))
+                    <img src="{{ asset('storage/'.$appProfile->logo) }}" class="h-10 w-10 rounded-lg object-cover shadow" alt="Logo">
+                @else
+                    <div class="h-10 w-10 rounded-lg bg-white text-primary-600 flex items-center justify-center text-xl shadow">
+                        <i class="fas fa-book-open-reader"></i>
+                    </div>
+                @endif
                 <div>
-                    <p class="font-bold text-lg leading-tight">Garage Library</p>
+                    <p class="font-bold text-lg leading-tight">{{ $appProfile->app_name ?? config('app.name') }}</p>
                     <p class="text-xs opacity-90">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
                 </div>
             </a>
@@ -43,8 +47,8 @@
                         <i class="fas fa-bolt text-amber-300"></i> Platform perpustakaan Digital
                     </span>
                     <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
-                        Garage Library<br>
-                        <span class="text-amber-300">Demo Perpustakaan Digital.</span>
+                        {{ $appProfile->app_name ?? config('app.name') }}<br>
+                        <span class="text-amber-300">Perpustakaan Digital.</span>
                     </h1>
                     <p class="text-lg opacity-90 mb-8 max-w-lg">
                         Koleksi buku fisik &amp; digital terintegrasi, reservasi antrean, e-book reader,
@@ -335,8 +339,8 @@
     <footer class="bg-slate-900 text-slate-400 py-8">
         <div class="container mx-auto px-4 flex flex-wrap justify-between gap-4 text-sm">
             <div>
-                <p class="font-bold text-white">Garage Library</p>
-                <p class="text-xs mt-1">&copy; {{ date('Y') }} Cybergarage. All rights reserved.</p>
+                <p class="font-bold text-white">{{ $appProfile->app_name ?? config('app.name') }}</p>
+                <p class="text-xs mt-1">&copy; {{ date('Y') }} {{ $appProfile->app_name ?? config('app.name') }}. All rights reserved.</p>
             </div>
             <div class="flex gap-4 text-xs">
                 <a href="{{ route('catalog.index') }}" class="hover:text-white">Katalog</a>

@@ -28,11 +28,25 @@
             </div>
             <div>
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Logo</label>
-                <input type="file" name="logo" accept="image/*" class="form-input mt-1">
+                <div class="flex items-center gap-3 mt-1">
+                    @if($profile->logo)
+                        <img src="{{ asset('storage/'.$profile->logo) }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700" alt="Logo saat ini">
+                    @else
+                        <div class="h-12 w-12 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-slate-700 text-slate-400"><i class="fas fa-image"></i></div>
+                    @endif
+                    <input type="file" name="logo" accept="image/*" class="form-input flex-1">
+                </div>
             </div>
             <div>
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Favicon</label>
-                <input type="file" name="favicon" class="form-input mt-1">
+                <div class="flex items-center gap-3 mt-1">
+                    @if($profile->favicon)
+                        <img src="{{ asset('storage/'.$profile->favicon) }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700 bg-white" alt="Favicon saat ini">
+                    @else
+                        <div class="h-12 w-12 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-slate-700 text-slate-400"><i class="fas fa-image"></i></div>
+                    @endif
+                    <input type="file" name="favicon" class="form-input flex-1">
+                </div>
             </div>
         </div>
     </div>

@@ -9,12 +9,16 @@
     {{-- Brand --}}
     <div class="flex items-center h-16 px-4 border-b border-white/5">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shrink-0"
-                 style="background-image:linear-gradient(135deg,#8b5cf6,#6d28d9)">
-                <i class="fas fa-book-open-reader"></i>
-            </div>
+            @if(!empty($appProfile->logo))
+                <img src="{{ asset('storage/'.$appProfile->logo) }}" class="h-10 w-10 rounded-xl object-cover shadow-lg shrink-0" alt="Logo">
+            @else
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shrink-0"
+                     style="background-image:linear-gradient(135deg,{{ $appProfile->primary_color ?? '#8b5cf6' }},{{ $appProfile->secondary_color ?? '#6d28d9' }})">
+                    <i class="fas fa-book-open-reader"></i>
+                </div>
+            @endif
             <div x-show="$store.sidebar.open" x-cloak class="leading-tight">
-                <p class="font-display font-extrabold text-base text-white tracking-tight">Pustaka<span class="text-primary-400">Digital</span></p>
+                <p class="font-display font-extrabold text-base text-white tracking-tight">{{ $appProfile->app_name ?? config('app.name') }}</p>
                 <p class="text-[10px] text-slate-400">Library Management</p>
             </div>
         </a>

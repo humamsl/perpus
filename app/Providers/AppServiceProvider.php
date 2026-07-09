@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\AppProfile;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,5 +33,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('login', fn (Request $r) =>
             Limit::perMinute(5)->by($r->ip())
         );
+
+        // Branding (nama/logo/favicon/warna) dari AppProfile, dipakai di layout & welcome.
+        View::composer(['layouts.app', 'welcome'], function ($view) {
+            $view->with('appProfile', AppProfile::current());
+        });
     }
 }
