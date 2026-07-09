@@ -31,10 +31,10 @@
                     ['route' => 'dashboard',           'label' => 'Dashboard',     'icon' => 'fas fa-gauge-high'],
                     ['route' => 'catalog.index',       'label' => 'Katalog Publik','icon' => 'fas fa-compass'],
                 ],
-                'Multi-Tenant' => [
+                <!-- Multi-Tenant' => [
                     ['route' => 'reading-spots.index', 'label' => 'Reading Spots', 'icon' => 'fas fa-map-location-dot'],
                     ['route' => 'ddc-categories.index','label' => 'Kategori DDC',  'icon' => 'fas fa-sitemap'],
-                ],
+                ],-->
                 'Koleksi' => [
                     ['route' => 'books.index',         'label' => 'Buku Digital',  'icon' => 'fas fa-tablet-screen-button', 'perm' => 'book.view'],
                     ['route' => 'offline-books.index', 'label' => 'Buku Fisik',    'icon' => 'fas fa-book',                 'perm' => 'book.view'],
