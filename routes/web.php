@@ -110,8 +110,20 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
     });
 
     // Reservasi & wishlist tersedia untuk semua role login
+    // Static-segment routes (scan/lookup) MUST come before the resource so
+    // /reservations/scan tidak tertangkap wildcard {reservation} kalau show
+    // route ditambahkan di kemudian hari — pola yang sama seperti /borrows/scan.
+    Route::get('reservations/scan',   [ReservationController::class, 'scan'])->middleware('permission:reservation.verify')->name('reservations.scan');
+    Route::post('reservations/lookup',[ReservationController::class, 'lookup'])->middleware('permission:reservation.verify')->name('reservations.lookup');
     Route::resource('reservations', ReservationController::class)
         ->only(['index', 'store', 'destroy']);
+    Route::get('reservations/{reservation}/qrcode',
+        [ReservationController::class, 'qrcode'])
+        ->name('reservations.qrcode');
+    Route::post('reservations/{reservation}/fulfill',
+        [ReservationController::class, 'fulfill'])
+        ->middleware('permission:reservation.verify')
+        ->name('reservations.fulfill');
     Route::post('reservations/{reservation}/verify',
         [ReservationController::class, 'verify'])
         ->middleware('permission:reservation.verify')
