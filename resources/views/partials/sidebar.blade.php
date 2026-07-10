@@ -50,9 +50,10 @@
                     ['route' => 'notifications.index', 'label' => 'Notifikasi',      'icon' => 'fas fa-bell'],
                 ],
                 'Admin' => [
-                    ['route' => 'reports.index',       'label' => 'Laporan',         'icon' => 'fas fa-chart-line', 'perm' => 'report.view'],
-                    ['route' => 'users.index',         'label' => 'Manajemen User',  'icon' => 'fas fa-user-shield','perm' => 'user.manage'],
-                    ['route' => 'settings.index',      'label' => 'Pengaturan',      'icon' => 'fas fa-gear',       'perm' => 'setting.manage'],
+                    ['route' => 'reports.index',         'label' => 'Laporan',            'icon' => 'fas fa-chart-line', 'perm' => 'report.view'],
+                    ['route' => 'users.index',           'label' => 'Manajemen User',     'icon' => 'fas fa-user-shield','perm' => 'user.manage'],
+                    ['route' => 'sync-datacenter.index', 'label' => 'Sinkronisasi Data',  'icon' => 'fas fa-rotate',     'perm' => 'member.create'],
+                    ['route' => 'settings.index',        'label' => 'Pengaturan',         'icon' => 'fas fa-gear',       'perm' => 'setting.manage'],
                 ],
             ];
         @endphp

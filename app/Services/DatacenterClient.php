@@ -2,129 +2,163 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Http;
+use App\Models\Datacenter\Guru;
+use App\Models\Datacenter\RombonganBelajar;
+use App\Models\Datacenter\Siswa;
+use App\Models\Datacenter\TahunAjaran;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Hash;
 use RuntimeException;
+use Throwable;
 
 /**
- * Klien HTTP ke API Data Center (routes/api.php di aplikasi Datacenter).
- * Semua endpoint dipanggil server-to-server pakai token Sanctum
- * (php artisan api:token perpus di aplikasi Datacenter).
+ * Klien Data Center — baca/tulis LANGSUNG ke database Data Center lewat koneksi
+ * kedua 'mysql_datacenter' (lihat config/database.php & App\Models\Datacenter\*),
+ * bukan lagi lewat HTTP API. Real-time, tanpa token, tanpa cache — pola yang sama
+ * seperti dipakai project CBT. Mengharuskan database Perpus & Data Center berada
+ * di server MySQL yang sama (DB_HOST_SECOND dkk di .env).
+ *
+ * Semua method mempertahankan kontrak (bentuk return & exception) yang sama
+ * seperti versi HTTP sebelumnya, supaya controller pemanggil (DatacenterImportController,
+ * DatacenterSyncController, StudentLoginController, TeacherLoginController) tidak
+ * perlu diubah sama sekali.
  */
 class DatacenterClient
 {
-    protected function client(): PendingRequest
-    {
-        return Http::baseUrl(rtrim((string) config('services.datacenter.url'), '/'))
-            ->withToken((string) config('services.datacenter.token'))
-            ->acceptJson()
-            ->timeout(10);
-    }
-
-    protected function get(string $path, array $query = []): array
-    {
-        try {
-            $response = $this->client()->get($path, $query);
-        } catch (ConnectionException $e) {
-            throw new RuntimeException('Tidak bisa terhubung ke Data Center. Hubungi admin.', previous: $e);
-        }
-
-        if ($response->failed()) {
-            throw new RuntimeException($response->json('message') ?: 'Data Center menolak permintaan.');
-        }
-
-        return $response->json() ?? [];
-    }
+    private const MAX_ATTEMPTS = 5;
+    private const LOCK_MINUTES = 15;
 
     public function tahunAjaran(): array
     {
-        return $this->get('/v1/tahun-ajaran')['data'] ?? [];
+        return $this->guard(fn () => TahunAjaran::orderByDesc('id')->get()->toArray());
     }
 
     public function rombel(int $tahunAjaranId): array
     {
-        return $this->get('/v1/rombel', ['tahun_ajaran_id' => $tahunAjaranId])['data'] ?? [];
+        return $this->guard(fn () => RombonganBelajar::with([
+                'jurusan:id,nama_jurusan,singkatan',
+                'tahunAjaran:id,kode_tahun_ajaran,nama_tahun_ajaran',
+            ])
+            ->where('tahun_ajaran_id', $tahunAjaranId)
+            ->orderBy('tingkat')->orderBy('nama_rombel')
+            ->get()->toArray());
     }
 
     public function siswaRombel(int $rombelId): array
     {
-        return $this->get("/v1/rombel/{$rombelId}/siswa");
+        return $this->guard(function () use ($rombelId) {
+            $rombel = RombonganBelajar::find($rombelId);
+            if (!$rombel) {
+                throw new RuntimeException('Rombel tidak ditemukan.');
+            }
+
+            $siswa = $rombel->siswa()
+                ->where('siswa.is_aktif', true)
+                ->orderBy('nama_siswa')
+                ->get(['siswa.id', 'siswa.nisn', 'siswa.nis', 'siswa.nama_siswa', 'siswa.jenis_kelamin',
+                       'siswa.tanggal_lahir', 'siswa.alamat', 'siswa.nomor_hp', 'siswa.email']);
+
+            return [
+                'data' => $siswa->toArray(),
+                'rombel' => [
+                    'id' => $rombel->id,
+                    'nama_rombel' => $rombel->nama_rombel,
+                    'tingkat' => $rombel->tingkat,
+                    'jurusan' => optional($rombel->jurusan)->nama_jurusan,
+                    'tahun_ajaran_id' => $rombel->tahun_ajaran_id,
+                ],
+            ];
+        });
     }
 
     /**
-     * Verifikasi NISN + password langsung ke Data Center. Melempar RuntimeException
-     * dengan pesan Data Center kalau ditolak (401/403/423), tanpa pernah menyimpan
-     * password siswa di Perpus.
+     * Verifikasi NISN + password langsung terhadap baris asli di Data Center
+     * (mengunci akun setelah percobaan gagal berulang, sama seperti endpoint
+     * API sebelumnya). Perpus tidak pernah menyimpan password siswa.
      */
     public function verifySiswa(string $nisn, string $password): array
     {
-        try {
-            $response = $this->client()->post('/v1/auth/verify-siswa', [
-                'username' => $nisn,
-                'password' => $password,
-            ]);
-        } catch (ConnectionException $e) {
-            throw new RuntimeException('Tidak bisa terhubung ke Data Center. Hubungi admin.', previous: $e);
-        }
-
-        if ($response->failed()) {
-            throw new RuntimeException($response->json('message') ?: 'NISN atau password salah.');
-        }
-
-        return $response->json('data') ?? [];
+        return $this->verifyAgainst(Siswa::where('nisn', $nisn)->first(), $password, 'siswa', function ($siswa) {
+            $siswa->load('rombelSekarang.rombel.jurusan');
+        });
     }
 
-    /**
-     * Verifikasi NIP + password guru ke Data Center (pola sama seperti verifySiswa,
-     * dipakai TeacherLoginController — Perpus tidak pernah menyimpan password guru).
-     */
+    /** Verifikasi NIP + password guru (pola sama seperti verifySiswa). */
     public function verifyGuru(string $nip, string $password): array
     {
-        try {
-            $response = $this->client()->post('/v1/auth/verify-guru', [
-                'username' => $nip,
-                'password' => $password,
-            ]);
-        } catch (ConnectionException $e) {
-            throw new RuntimeException('Tidak bisa terhubung ke Data Center. Hubungi admin.', previous: $e);
-        }
-
-        if ($response->failed()) {
-            throw new RuntimeException($response->json('message') ?: 'NIP atau password salah.');
-        }
-
-        return $response->json('data') ?? [];
+        return $this->verifyAgainst(Guru::where('nip', $nip)->first(), $password, 'guru');
     }
 
     /** Semua siswa (flat, semua rombel) — dipakai auto-sync anggota perpustakaan. */
     public function allSiswa(): array
     {
-        return $this->fetchAllPaginated('/v1/siswa');
+        return $this->guard(fn () => Siswa::with('rombelSekarang.rombel.jurusan')
+            ->orderBy('nama_siswa')->get()->toArray());
     }
 
     /** Semua guru — dipakai auto-sync anggota perpustakaan. */
     public function allGuru(): array
     {
-        return $this->fetchAllPaginated('/v1/guru');
+        return $this->guard(fn () => Guru::orderBy('nama_ptk')->get()->toArray());
     }
 
     /**
-     * Ambil seluruh data dari endpoint paginated Data Center (respons Laravel
-     * paginator: { data, current_page, last_page, ... }) dgn menelusuri semua halaman.
+     * Bungkus query ke koneksi kedua supaya kegagalan koneksi (server MySQL Data
+     * Center tidak terjangkau/config salah) melempar RuntimeException yang seragam,
+     * sama seperti dulu ConnectionException dari HTTP client.
      */
-    protected function fetchAllPaginated(string $path, int $perPage = 200): array
+    private function guard(\Closure $fn)
     {
-        $all = [];
-        $page = 1;
-        do {
-            $res  = $this->get($path, ['per_page' => $perPage, 'page' => $page]);
-            $data = $res['data'] ?? [];
-            $all  = array_merge($all, $data);
-            $last = (int) ($res['last_page'] ?? 1);
-            $page++;
-        } while ($page <= $last && ! empty($data));
+        try {
+            return $fn();
+        } catch (QueryException $e) {
+            // QueryException extends PDOException extends RuntimeException, jadi
+            // HARUS ditangkap sebelum catch (RuntimeException) di bawah, supaya
+            // error SQL mentah tidak lolos ke pengguna tanpa dibungkus pesan ramah.
+            throw new RuntimeException('Tidak bisa terhubung ke database Data Center. Hubungi admin.', previous: $e);
+        } catch (RuntimeException $e) {
+            throw $e;
+        }
+    }
 
-        return $all;
+    private function verifyAgainst($account, string $password, string $label, ?\Closure $loadExtra = null): array
+    {
+        return $this->guard(function () use ($account, $password, $label, $loadExtra) {
+            if (!$account) {
+                throw new RuntimeException('Kombinasi username dan password salah.');
+            }
+
+            if (!empty($account->locked_until) && $account->locked_until->isFuture()) {
+                $menit = now()->diffInMinutes($account->locked_until);
+                throw new RuntimeException("Akun dikunci sementara. Coba lagi dalam {$menit} menit.");
+            }
+
+            $status = strtolower((string) ($account->account_status ?? 'active'));
+            if ($status !== 'active' || !$account->is_aktif) {
+                throw new RuntimeException(ucfirst($label)." tidak aktif.");
+            }
+
+            if (!Hash::check($password, (string) $account->password)) {
+                $count = (int) ($account->failed_login_count ?? 0) + 1;
+                $updates = ['failed_login_count' => $count];
+                if ($count >= self::MAX_ATTEMPTS) {
+                    $updates['locked_until'] = now()->addMinutes(self::LOCK_MINUTES);
+                    $updates['failed_login_count'] = 0;
+                }
+                $account->forceFill($updates)->save();
+
+                throw new RuntimeException('Kombinasi username dan password salah.');
+            }
+
+            $account->forceFill([
+                'failed_login_count' => 0,
+                'locked_until' => null,
+                'last_seen_at' => now(),
+            ])->save();
+
+            if ($loadExtra) $loadExtra($account);
+
+            return $account->toArray();
+        });
     }
 }

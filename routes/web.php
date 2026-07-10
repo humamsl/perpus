@@ -188,6 +188,13 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::post('import',      [DatacenterImportController::class, 'import'])->name('import');
     });
 
+    // Sinkronisasi Data — otomatis samakan seluruh siswa & guru dari Data Center
+    // sebagai anggota perpustakaan (upsert idempoten, aman dijalankan berkali-kali).
+    Route::prefix('sync-datacenter')->name('sync-datacenter.')->middleware('permission:member.create')->group(function () {
+        Route::get('/',   [\App\Http\Controllers\DatacenterSyncController::class, 'index'])->name('index');
+        Route::post('run',[\App\Http\Controllers\DatacenterSyncController::class, 'run'])->name('run');
+    });
+
     // E-Book management (upload/edit) — terpisah dari reader
     Route::middleware('permission:ebook.manage')->group(function () {
         Route::get('ebooks/manage',              [EbookController::class, 'manage'])->name('ebooks.manage');
