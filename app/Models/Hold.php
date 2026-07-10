@@ -10,7 +10,7 @@ class Hold extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'reading_spot_id', 'hold_at', 'expires_at', 'status', 'notes',
+        'code', 'user_id', 'reading_spot_id', 'hold_at', 'expires_at', 'status', 'notes',
     ];
 
     protected $casts = [

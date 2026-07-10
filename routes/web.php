@@ -110,20 +110,8 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
     });
 
     // Reservasi & wishlist tersedia untuk semua role login
-    // Static-segment routes (scan/lookup) MUST come before the resource so
-    // /reservations/scan tidak tertangkap wildcard {reservation} kalau show
-    // route ditambahkan di kemudian hari — pola yang sama seperti /borrows/scan.
-    Route::get('reservations/scan',   [ReservationController::class, 'scan'])->middleware('permission:reservation.verify')->name('reservations.scan');
-    Route::post('reservations/lookup',[ReservationController::class, 'lookup'])->middleware('permission:reservation.verify')->name('reservations.lookup');
     Route::resource('reservations', ReservationController::class)
         ->only(['index', 'store', 'destroy']);
-    Route::get('reservations/{reservation}/qrcode',
-        [ReservationController::class, 'qrcode'])
-        ->name('reservations.qrcode');
-    Route::post('reservations/{reservation}/fulfill',
-        [ReservationController::class, 'fulfill'])
-        ->middleware('permission:reservation.verify')
-        ->name('reservations.fulfill');
     Route::post('reservations/{reservation}/verify',
         [ReservationController::class, 'verify'])
         ->middleware('permission:reservation.verify')
@@ -330,8 +318,13 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         ->name('offline-books.addCopy');
 
     Route::prefix('holds')->name('holds.')->group(function () {
+        // Static-segment routes MUST come before any /{hold} wildcard.
+        Route::get('/scan',              [\App\Http\Controllers\HoldController::class, 'scan'])->middleware('permission:borrow.return')->name('scan');
+        Route::post('/lookup',           [\App\Http\Controllers\HoldController::class, 'lookup'])->middleware('permission:borrow.return')->name('lookup');
         Route::get('/',                  [\App\Http\Controllers\HoldController::class, 'index'])->name('index');
         Route::post('/',                 [\App\Http\Controllers\HoldController::class, 'store'])->name('store');
+        Route::get('/{hold}/qrcode',     [\App\Http\Controllers\HoldController::class, 'qrcode'])->name('qrcode');
+        Route::post('/{hold}/confirm-scan', [\App\Http\Controllers\HoldController::class, 'confirmScan'])->middleware('permission:borrow.return')->name('confirmScan');
         Route::post('/{hold}/fulfill',   [\App\Http\Controllers\HoldController::class, 'fulfill'])->name('fulfill');
         Route::post('/{hold}/cancel',    [\App\Http\Controllers\HoldController::class, 'cancel'])->name('cancel');
     });

@@ -56,6 +56,7 @@
             <th>Rak</th>
             <th>Kondisi</th>
             <th>Status</th>
+            @auth<th></th>@endauth
         </tr></thead>
         <tbody>
         @forelse($book->copies as $c)
@@ -65,9 +66,20 @@
                 <td>{{ $c->shelf?->code }}</td>
                 <td>{{ $c->condition }}</td>
                 <td>@if($c->isAvailable())<span class="badge-green">tersedia</span>@else<span class="badge-yellow">dipinjam</span>@endif</td>
+                @auth
+                <td class="text-right">
+                    @if($c->isAvailable())
+                    <form method="POST" action="{{ route('holds.store') }}">@csrf
+                        <input type="hidden" name="reading_spot_id" value="{{ $book->reading_spot_id }}">
+                        <input type="hidden" name="copy_ids[]" value="{{ $c->id }}">
+                        <button class="btn-primary !px-3 !py-1.5 text-xs"><i class="fas fa-qrcode"></i> Pinjam</button>
+                    </form>
+                    @endif
+                </td>
+                @endauth
             </tr>
         @empty
-            <tr><td colspan="5" class="text-center text-slate-500 py-6">
+            <tr><td colspan="6" class="text-center text-slate-500 py-6">
                 <i class="fas fa-inbox text-2xl mb-2 block text-slate-300"></i>
                 Belum ada kopi.
             </td></tr>
@@ -75,6 +87,9 @@
         </tbody>
         </table>
         </div>
+        @auth
+        <p class="form-hint mt-2"><i class="fas fa-circle-info"></i> Klik "Pinjam" untuk mendapatkan kode QR yang bisa ditunjukkan ke petugas perpustakaan.</p>
+        @endauth
     </div>
 </div>
 @endsection

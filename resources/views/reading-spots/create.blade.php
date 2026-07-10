@@ -55,6 +55,9 @@
             <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Deskripsi</label>
             <textarea name="description" class="form-textarea mt-1" rows="3"></textarea>
         </div>
+
+        @include('partials.location-picker', ['latitude' => null, 'longitude' => null])
+
         <div class="md:col-span-2 flex gap-2 pt-2">
             <button class="btn-primary"><i class="fas fa-floppy-disk"></i> Simpan</button>
             <a href="{{ route('reading-spots.index') }}" class="btn-secondary"><i class="fas fa-arrow-left"></i> Batal</a>

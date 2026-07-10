@@ -43,7 +43,7 @@
                     ['route' => 'checkouts.index',     'label' => 'Checkout Fisik',  'icon' => 'fas fa-cart-shopping'],
                     ['route' => 'holds.index',         'label' => 'Hold/Antrean',    'icon' => 'fas fa-hourglass-half'],
                     ['route' => 'reservations.index',  'label' => 'Reservasi',       'icon' => 'fas fa-bookmark'],
-                    ['route' => 'reservations.scan',   'label' => 'Scan QR Peminjaman', 'icon' => 'fas fa-qrcode', 'perm' => 'reservation.verify'],
+                    ['route' => 'holds.scan',           'label' => 'Scan QR Peminjaman', 'icon' => 'fas fa-qrcode', 'perm' => 'borrow.return'],
                     ['route' => 'fines.index',         'label' => 'Denda',           'icon' => 'fas fa-money-bill-wave', 'perm' => 'fine.view'],
                 ],
                 'Personal' => [

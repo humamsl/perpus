@@ -112,9 +112,13 @@ class CheckoutService
 
     public function fulfillHold(Hold $hold, ?int $staffId = null, ?int $days = null): Checkout
     {
-        $copyIds = $hold->offlineBookCopies()->pluck('offline_book_copies.id')->all();
-        $checkout = $this->checkout($hold->user, $hold->readingSpot, $copyIds, $staffId, $days);
-        $hold->update(['status' => 'fulfilled']);
-        return $checkout;
+        // Hold di-set 'fulfilled' SEBELUM checkout() dipanggil (dalam transaksi yang
+        // sama) supaya OfflineBookCopy::isAvailable() tidak menganggap kopi ini masih
+        // "ditahan" oleh hold aktifnya sendiri dan menolak checkout-nya sendiri.
+        return DB::transaction(function () use ($hold, $staffId, $days) {
+            $copyIds = $hold->offlineBookCopies()->pluck('offline_book_copies.id')->all();
+            $hold->update(['status' => 'fulfilled']);
+            return $this->checkout($hold->user, $hold->readingSpot, $copyIds, $staffId, $days);
+        });
     }
 }

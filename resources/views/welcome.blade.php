@@ -290,30 +290,89 @@
     </section>
 -->
     {{-- Reading Spots --}}
-    @php $spots = \App\Models\ReadingSpot::active()->latest()->take(6)->get(); @endphp
+    @php
+        $spots = \App\Models\ReadingSpot::active()->get();
+        $spotsGeoJson = $spots->map(fn ($s) => [
+            'id' => $s->id, 'name' => $s->name, 'city' => $s->city, 'province' => $s->province,
+            'type' => $s->type, 'lat' => $s->latitude, 'lng' => $s->longitude,
+        ])->values();
+    @endphp
     @if($spots->count() > 0)
-    <section id="spots" class="bg-slate-100 dark:bg-slate-800/50 py-16">
+    <section id="spots" class="bg-slate-100 dark:bg-slate-800/50 py-16" x-data="readingSpotLocator({{ $spotsGeoJson->toJson() }})" x-init="init()">
         <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
+            <div class="text-center mb-8">
                 <span class="text-primary-600 font-semibold text-sm uppercase tracking-wider">Jaringan Reading Spots</span>
                 <h2 class="text-3xl md:text-4xl font-bold mt-2">Pilih Lokasi Terdekat Anda</h2>
                 <p class="text-slate-500 mt-3 max-w-xl mx-auto">Setiap spot punya koleksi sendiri. Akses katalog spesifik atau gabungan.</p>
             </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($spots as $s)
-                <div class="card hover:shadow-hover transition">
-                    <div class="flex items-start gap-3">
-                        <div class="h-14 w-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-white flex items-center justify-center shadow-soft text-xl shrink-0">
-                            <i class="fas {{ $s->type === 'school' ? 'fa-school' : ($s->type === 'library' ? 'fa-book-bookmark' : 'fa-users') }}"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-bold truncate">{{ $s->name }}</h3>
-                            <p class="text-xs text-slate-500"><i class="fas fa-map-pin"></i> {{ $s->city ?: '-' }}, {{ $s->province ?: '' }}</p>
-                            <span class="badge-blue mt-2">{{ ucfirst($s->type) }}</span>
-                        </div>
+
+            {{-- Banner GPS --}}
+            <div class="rounded-2xl p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 mb-8 transition-colors"
+                 :class="{
+                    'bg-red-50 dark:bg-red-950/30': state === 'idle' || state === 'loading',
+                    'bg-amber-50 dark:bg-amber-950/30': state === 'error',
+                    'bg-emerald-50 dark:bg-emerald-950/30': state === 'found',
+                 }">
+                <div class="flex items-start gap-3">
+                    <i class="fas text-2xl mt-1"
+                       :class="{
+                            'fa-location-crosshairs text-red-500': state === 'idle' || state === 'loading',
+                            'fa-triangle-exclamation text-amber-500': state === 'error',
+                            'fa-circle-check text-emerald-500': state === 'found',
+                       }"></i>
+                    <div>
+                        <template x-if="state === 'idle' || state === 'loading'">
+                            <div>
+                                <p class="font-bold text-red-600 dark:text-red-400">Fitur Lokasi / GPS Tidak Aktif</p>
+                                <p class="text-sm text-red-500 dark:text-red-400/80 mt-0.5">Izinkan layanan lokasi pada browser untuk menemukan reading spot terdekat dari Anda.</p>
+                            </div>
+                        </template>
+                        <template x-if="state === 'found'">
+                            <div>
+                                <p class="font-bold text-emerald-700 dark:text-emerald-400" x-text="'Spot terdekat: ' + nearest.name"></p>
+                                <p class="text-sm text-emerald-600 dark:text-emerald-400/80 mt-0.5" x-text="(nearest.city || '-') + ' · sekitar ' + nearest.distance + ' km dari Anda'"></p>
+                            </div>
+                        </template>
+                        <template x-if="state === 'error'">
+                            <div>
+                                <p class="font-bold text-amber-700 dark:text-amber-400">Lokasi Tidak Tersedia</p>
+                                <p class="text-sm text-amber-600 dark:text-amber-400/80 mt-0.5" x-text="error"></p>
+                            </div>
+                        </template>
                     </div>
                 </div>
-            @endforeach
+                <button @click="locate()" x-show="state !== 'found'" :disabled="state === 'loading'" class="btn-danger shrink-0">
+                    <i class="fas" :class="state === 'loading' ? 'fa-spinner fa-spin' : 'fa-location-dot'"></i>
+                    <span x-text="state === 'loading' ? 'Mencari lokasi...' : 'Izinkan Lokasi'"></span>
+                </button>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-6">
+                {{-- Map --}}
+                <div class="lg:col-span-2 card !p-0 overflow-hidden">
+                    <div id="spots-map" style="height:380px"></div>
+                </div>
+
+                {{-- Cards --}}
+                <div class="lg:col-span-3 grid sm:grid-cols-2 gap-4">
+                    <template x-for="s in sortedSpots" :key="s.id">
+                        <div class="card hover:shadow-hover transition">
+                            <div class="flex items-start gap-3">
+                                <div class="h-14 w-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-white flex items-center justify-center shadow-soft text-xl shrink-0">
+                                    <i class="fas" :class="s.type === 'school' ? 'fa-school' : (s.type === 'library' ? 'fa-book-bookmark' : 'fa-users')"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-bold truncate" x-text="s.name"></h3>
+                                    <p class="text-xs text-slate-500"><i class="fas fa-map-pin"></i> <span x-text="(s.city || '-') + ', ' + (s.province || '')"></span></p>
+                                    <div class="flex items-center gap-2 mt-2 flex-wrap">
+                                        <span class="badge-blue" x-text="s.type.charAt(0).toUpperCase() + s.type.slice(1)"></span>
+                                        <span class="badge-green" x-show="s.distance !== undefined" x-text="s.distance + ' km'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     </section>
@@ -351,4 +410,85 @@
         </div>
     </footer>
 </div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    function readingSpotLocator(spots) {
+        return {
+            spots,
+            sortedSpots: spots,
+            state: 'idle', // idle | loading | found | error
+            error: null,
+            nearest: null,
+            map: null,
+            userMarker: null,
+
+            init() {
+                const withCoords = this.spots.filter(s => s.lat && s.lng);
+                const center = withCoords.length ? [withCoords[0].lat, withCoords[0].lng] : [-2.5, 118.0];
+                this.map = L.map('spots-map').setView(center, withCoords.length ? 5 : 4);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
+                    maxZoom: 19,
+                }).addTo(this.map);
+
+                this.spotMarkers = {};
+                withCoords.forEach(s => {
+                    const marker = L.marker([s.lat, s.lng]).addTo(this.map)
+                        .bindPopup(`<strong>${s.name}</strong><br>${s.city || ''} ${s.province || ''}`);
+                    this.spotMarkers[s.id] = marker;
+                });
+
+                if (withCoords.length > 1) {
+                    this.map.fitBounds(withCoords.map(s => [s.lat, s.lng]), { padding: [30, 30] });
+                }
+            },
+
+            locate() {
+                if (!navigator.geolocation) { this.state = 'error'; this.error = 'Browser tidak mendukung geolokasi.'; return; }
+                this.state = 'loading';
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const { latitude: lat, longitude: lon } = pos.coords;
+                        const toRad = d => d * Math.PI / 180;
+                        const withDistance = this.spots.map(s => {
+                            if (!s.lat || !s.lng) return { ...s, distance: undefined };
+                            const R = 6371;
+                            const dLat = toRad(s.lat - lat);
+                            const dLon = toRad(s.lng - lon);
+                            const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat)) * Math.cos(toRad(s.lat)) * Math.sin(dLon / 2) ** 2;
+                            const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                            return { ...s, distance: dist.toFixed(1) };
+                        });
+
+                        const withCoords = withDistance.filter(s => s.distance !== undefined);
+                        if (!withCoords.length) {
+                            this.state = 'error';
+                            this.error = 'Belum ada reading spot dengan lokasi terdaftar.';
+                            return;
+                        }
+
+                        withCoords.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+                        this.sortedSpots = [...withCoords, ...withDistance.filter(s => s.distance === undefined)];
+                        this.nearest = withCoords[0];
+                        this.state = 'found';
+
+                        if (this.userMarker) this.userMarker.setLatLng([lat, lon]);
+                        else {
+                            this.userMarker = L.marker([lat, lon], {
+                                icon: L.divIcon({ className: '', html: '<div style="background:#7c3aed;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 2px #7c3aed"></div>' }),
+                            }).addTo(this.map).bindPopup('Lokasi Anda');
+                        }
+                        this.map.setView([lat, lon], 12);
+
+                        const nearestMarker = this.spotMarkers[this.nearest.id];
+                        if (nearestMarker) nearestMarker.openPopup();
+                    },
+                    () => { this.state = 'error'; this.error = 'Izin lokasi ditolak atau tidak tersedia.'; }
+                );
+            },
+        };
+    }
+</script>
 @endsection

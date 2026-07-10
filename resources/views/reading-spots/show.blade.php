@@ -48,6 +48,14 @@
             <hr class="my-3 border-slate-200 dark:border-slate-700">
             <p class="text-sm text-slate-600 dark:text-slate-300"><i class="fas fa-location-dot text-primary-600 mr-1"></i>{{ $readingSpot->address }}</p>
         @endif
+
+        @if($readingSpot->latitude && $readingSpot->longitude)
+            <hr class="my-3 border-slate-200 dark:border-slate-700">
+            <div id="spot-detail-map" class="rounded-xl overflow-hidden" style="height:200px"></div>
+        @else
+            <hr class="my-3 border-slate-200 dark:border-slate-700">
+            <p class="text-xs text-amber-600 dark:text-amber-400"><i class="fas fa-triangle-exclamation"></i> Titik lokasi belum diatur. <a href="{{ route('reading-spots.edit', $readingSpot) }}" class="underline font-semibold">Atur di sini</a> supaya muncul di peta halaman depan.</p>
+        @endif
     </div>
     <div class="card">
         <h2 class="font-bold text-lg mb-3">Aturan Peminjaman</h2>
@@ -66,4 +74,19 @@
         @endif
     </div>
 </div>
+
+@if($readingSpot->latitude && $readingSpot->longitude)
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const map = L.map('spot-detail-map').setView([{{ $readingSpot->latitude }}, {{ $readingSpot->longitude }}], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19,
+        }).addTo(map);
+        L.marker([{{ $readingSpot->latitude }}, {{ $readingSpot->longitude }}]).addTo(map).bindPopup(@json($readingSpot->name));
+    });
+</script>
+@endif
 @endsection

@@ -6,9 +6,6 @@
     'icon'  => 'fa-bookmark',
     'title' => 'Reservasi Buku',
     'desc'  => 'Kelola antrean reservasi buku dari anggota.',
-    'actions' => [
-        ['url' => route('reservations.scan'), 'label' => 'Scan QR Peminjaman', 'class' => 'btn-primary', 'icon' => 'fa-qrcode', 'can' => 'reservation.verify'],
-    ],
 ])
 
 <div class="card overflow-x-auto">
@@ -32,9 +29,6 @@
                 <td class="text-right whitespace-nowrap">
                     @if($r->status === 'pending')
                         <div class="inline-flex gap-1">
-                            @if($r->code)
-                            <a href="{{ route('reservations.qrcode', $r) }}" class="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 text-primary-600" title="Lihat QR"><i class="fas fa-qrcode"></i></a>
-                            @endif
                             @can('reservation.verify')
                             <form method="POST" action="{{ route('reservations.verify', $r) }}" class="inline">@csrf
                                 <button class="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 text-primary-600" title="Verifikasi"><i class="fas fa-check"></i></button>

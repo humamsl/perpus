@@ -57,6 +57,9 @@
             <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Deskripsi</label>
             <textarea name="description" class="form-textarea mt-1" rows="3">{{ $spot->description }}</textarea>
         </div>
+
+        @include('partials.location-picker', ['latitude' => $spot->latitude, 'longitude' => $spot->longitude])
+
         <div class="md:col-span-2">
             <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Logo baru</label>
             <input type="file" name="logo" accept="image/*" class="form-input mt-1">
