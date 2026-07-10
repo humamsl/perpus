@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\OfflineBooksImport;
 use App\Models\Author;
 use App\Models\BookCategory;
 use App\Models\DdcCategory;
@@ -13,6 +14,7 @@ use App\Models\Shelf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OfflineBookController extends Controller
 {
@@ -148,6 +150,37 @@ class OfflineBookController extends Controller
             ]);
         }
         return back()->with('toast', "{$r->count} kopi ditambahkan.");
+    }
+
+    public function importForm()
+    {
+        return view('offline-books.import', ['spots' => ReadingSpot::active()->orderBy('name')->get()]);
+    }
+
+    public function import(Request $r)
+    {
+        $r->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:10240']);
+
+        $import = new OfflineBooksImport();
+        Excel::import($import, $r->file('file'));
+
+        return back()
+            ->with('toast', "Import selesai: {$import->imported} buku fisik ditambahkan, {$import->skipped} dilewati.")
+            ->with('importErrors', $import->errors);
+    }
+
+    public function importTemplate()
+    {
+        $columns = ['reading_spot', 'title', 'subtitle', 'isbn', 'publisher', 'ddc', 'category', 'authors', 'year_published', 'language', 'pages', 'source', 'jumlah', 'synopsis', 'keywords'];
+        $spotName = ReadingSpot::active()->orderBy('id')->value('name') ?? 'Nama Reading Spot';
+        $sample  = [$spotName, 'Contoh Judul Buku Fisik', '', '', 'Penerbit Contoh', '', 'Fiksi', 'Penulis Satu, Penulis Dua', 2024, 'id', 200, 'purchase', 2, 'Sinopsis singkat.', 'kata kunci, contoh'];
+
+        return response()->streamDownload(function () use ($columns, $sample) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, $columns);
+            fputcsv($out, $sample);
+            fclose($out);
+        }, 'template-import-buku-fisik.csv', ['Content-Type' => 'text/csv']);
     }
 
     protected function formOptions(): array

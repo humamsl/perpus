@@ -156,6 +156,7 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
     Route::prefix('books')->name('books.')->group(function () {
         Route::get('/import/form',     [BookController::class, 'importForm'])->middleware('permission:book.import')->name('import.form');
         Route::post('/import',         [BookController::class, 'import'])->middleware('permission:book.import')->name('import');
+        Route::get('/import/template', [BookController::class, 'importTemplate'])->middleware('permission:book.import')->name('import.template');
         Route::get('/export/{format}', [BookController::class, 'export'])->middleware('permission:book.export')->whereIn('format', ['xlsx','csv','pdf'])->name('export');
         Route::get('/{book}/barcode',  [BookController::class, 'barcode'])->name('barcode');
         Route::get('/{book}/qrcode',   [BookController::class, 'qrcode'])->name('qrcode');
@@ -298,6 +299,13 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
     Route::resource('reading-spots', \App\Http\Controllers\ReadingSpotController::class);
     Route::resource('ddc-categories', \App\Http\Controllers\DdcCategoryController::class)->except(['show']);
 
+    // Static-segment routes MUST come before the resource so /offline-books/import/*
+    // is not captured by the /offline-books/{offlineBook} (show) wildcard.
+    Route::prefix('offline-books')->name('offline-books.')->group(function () {
+        Route::get('/import/form',     [\App\Http\Controllers\OfflineBookController::class, 'importForm'])->middleware('permission:book.import')->name('import.form');
+        Route::post('/import',         [\App\Http\Controllers\OfflineBookController::class, 'import'])->middleware('permission:book.import')->name('import');
+        Route::get('/import/template', [\App\Http\Controllers\OfflineBookController::class, 'importTemplate'])->middleware('permission:book.import')->name('import.template');
+    });
     Route::resource('offline-books', \App\Http\Controllers\OfflineBookController::class);
     Route::post('offline-books/{offlineBook}/add-copy', [\App\Http\Controllers\OfflineBookController::class, 'addCopy'])
         ->name('offline-books.addCopy');

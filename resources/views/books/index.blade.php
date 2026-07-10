@@ -6,6 +6,7 @@
     'title' => 'Manajemen Buku',
     'desc'  => 'Kelola koleksi buku digital perpustakaan.',
     'actions' => [
+        ['url' => route('books.import.form'), 'label' => 'Import', 'class' => 'btn-secondary', 'icon' => 'fa-file-import', 'can' => 'book.import'],
         ['url' => route('books.create'), 'label' => 'Buku Baru', 'class' => 'btn-primary', 'icon' => 'fa-plus', 'can' => 'book.create'],
     ],
 ])

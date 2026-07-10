@@ -6,6 +6,7 @@
     'title' => 'Manajemen Buku Fisik',
     'desc'  => 'Kelola koleksi buku fisik di setiap reading spot.',
     'actions' => [
+        ['url' => route('offline-books.import.form'), 'label' => 'Import', 'class' => 'btn-secondary', 'icon' => 'fa-file-import', 'can' => 'book.import'],
         ['url' => route('offline-books.create'), 'label' => 'Buku Fisik', 'class' => 'btn-primary', 'icon' => 'fa-plus', 'can' => 'book.create'],
     ],
 ])

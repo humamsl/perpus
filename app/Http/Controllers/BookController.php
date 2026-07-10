@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use App\Imports\BooksImport;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BookController extends Controller
 {
@@ -80,7 +82,32 @@ class BookController extends Controller
     public function barcode(Book $book) { return view('books.barcode', compact('book')); }
     public function qrcode(Book $book)  { return view('books.qrcode', compact('book')); }
     public function importForm()        { return view('books.import'); }
-    public function import(Request $r)  { return back()->with('toast', 'Import: implementasi Maatwebsite\Excel.'); }
+
+    public function import(Request $r)
+    {
+        $r->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:10240']);
+
+        $import = new BooksImport();
+        Excel::import($import, $r->file('file'));
+
+        return back()
+            ->with('toast', "Import selesai: {$import->imported} buku ditambahkan, {$import->skipped} dilewati.")
+            ->with('importErrors', $import->errors);
+    }
+
+    public function importTemplate()
+    {
+        $columns = ['isbn', 'title', 'subtitle', 'year_published', 'edition', 'language', 'pages', 'stock', 'category', 'publisher', 'authors', 'synopsis', 'keywords'];
+        $sample  = ['9780000000001', 'Contoh Judul Buku', '', 2024, '1', 'id', 200, 3, 'Fiksi', 'Penerbit Contoh', 'Penulis Satu, Penulis Dua', 'Sinopsis singkat.', 'kata kunci, contoh'];
+
+        return response()->streamDownload(function () use ($columns, $sample) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, $columns);
+            fputcsv($out, $sample);
+            fclose($out);
+        }, 'template-import-buku-digital.csv', ['Content-Type' => 'text/csv']);
+    }
+
     public function export(string $format) { return back()->with('toast', "Export $format: implementasi Maatwebsite\Excel."); }
     public function bulkDelete(Request $r) {
         Book::whereIn('id', $r->input('ids', []))->delete();
