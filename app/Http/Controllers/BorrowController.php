@@ -25,7 +25,7 @@ class BorrowController extends Controller
         $this->authorize('create', BorrowTransaction::class);
         return view('borrows.create', [
             'members' => Member::with('user')->where('is_active', true)->orderBy('id')->get(),
-            'books'   => Book::available()->orderBy('title')->get(['id','title','available','stock']),
+            'books'   => Book::orderBy('title')->get(['id','title']),
         ]);
     }
 

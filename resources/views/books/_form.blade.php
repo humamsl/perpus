@@ -38,10 +38,6 @@
         </select>
     </div>
     <div>
-        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Stok</label>
-        <input type="number" name="stock" required value="{{ old('stock', $book->stock ?? 1) }}" class="form-input mt-1">
-    </div>
-    <div>
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Bahasa</label>
         <input name="language" value="{{ old('language', $book->language ?? 'id') }}" class="form-input mt-1">
     </div>

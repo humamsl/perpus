@@ -56,17 +56,12 @@
                             <i class="fas fa-book text-4xl"></i>
                         </div>
                     @endif
-                    @if($b->available > 0)
-                        <span class="absolute top-2 right-2 badge-green text-[10px]"><i class="fas fa-check"></i> Tersedia</span>
-                    @else
-                        <span class="absolute top-2 right-2 badge-red text-[10px]"><i class="fas fa-xmark"></i> Habis</span>
-                    @endif
+                    <span class="absolute top-2 right-2 badge-green text-[10px]"><i class="fas fa-infinity"></i> Baca Gratis</span>
                 </div>
                 <p class="font-semibold text-sm line-clamp-2 group-hover:text-primary-600 transition">{{ $b->title }}</p>
                 <p class="text-xs text-slate-500 mt-1 line-clamp-1">{{ $b->authors->pluck('name')->join(', ') ?: 'Anonim' }}</p>
                 <p class="text-xs mt-2 flex items-center justify-between">
                     <span class="text-amber-500"><i class="fas fa-star"></i> {{ $b->rating_avg ?: '-' }}</span>
-                    <span class="text-slate-500">{{ $b->available }}/{{ $b->stock }}</span>
                 </p>
             </div>
         </a>

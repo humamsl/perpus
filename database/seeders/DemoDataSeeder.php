@@ -53,10 +53,10 @@ class DemoDataSeeder extends Seeder
         $shelves = Shelf::all();
 
         $members  = $this->ensureMembers();
-        // Selalu ambil buku yang stoknya tersedia agar BorrowService tidak menolak.
+        // Buku digital tidak dibatasi stok, jadi buku manapun bisa langsung dipinjam.
         $nextBook = function () {
-            $book = Book::where('available', '>', 0)->inRandomOrder()->first();
-            abort_unless($book, 500, 'Tidak ada buku dengan stok tersedia untuk data demo.');
+            $book = Book::inRandomOrder()->first();
+            abort_unless($book, 500, 'Tidak ada buku untuk data demo.');
             return $book;
         };
 

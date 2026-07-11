@@ -34,7 +34,6 @@ class BookController extends Controller
     public function store(StoreBookRequest $r)
     {
         $data = $r->validated();
-        $data['available'] = $data['stock'];
         $data['barcode']   = 'BK' . Str::upper(Str::random(8));
         $data['qr_code']   = 'QR-' . Str::random(10);
         if ($r->hasFile('cover')) $data['cover'] = $r->file('cover')->store('books', 'public');
@@ -97,8 +96,8 @@ class BookController extends Controller
 
     public function importTemplate()
     {
-        $columns = ['isbn', 'title', 'subtitle', 'year_published', 'edition', 'language', 'pages', 'stock', 'category', 'publisher', 'authors', 'synopsis', 'keywords'];
-        $sample  = ['9780000000001', 'Contoh Judul Buku', '', 2024, '1', 'id', 200, 3, 'Fiksi', 'Penerbit Contoh', 'Penulis Satu, Penulis Dua', 'Sinopsis singkat.', 'kata kunci, contoh'];
+        $columns = ['isbn', 'title', 'subtitle', 'year_published', 'edition', 'language', 'pages', 'category', 'publisher', 'authors', 'synopsis', 'keywords'];
+        $sample  = ['9780000000001', 'Contoh Judul Buku', '', 2024, '1', 'id', 200, 'Fiksi', 'Penerbit Contoh', 'Penulis Satu, Penulis Dua', 'Sinopsis singkat.', 'kata kunci, contoh'];
 
         return response()->streamDownload(function () use ($columns, $sample) {
             $out = fopen('php://output', 'w');

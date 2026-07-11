@@ -19,8 +19,7 @@
             <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">DDC</dt><dd>{{ $book->ddcCategory?->code }} {{ $book->ddcCategory?->name }}</dd></div>
             <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Sumber</dt><dd>{{ $book->source }}</dd></div>
             <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Reading Spot</dt><dd>{{ $book->readingSpot?->name }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Total Kopi</dt><dd>{{ $book->copies->count() }}</dd></div>
-            <div class="flex justify-between items-center py-1"><dt class="text-slate-500 dark:text-slate-400">Tersedia</dt><dd class="badge-green">{{ $book->availableCopiesCount() }}</dd></div>
+            <div class="flex justify-between items-center py-1"><dt class="text-slate-500 dark:text-slate-400">Stok</dt><dd class="badge-green">{{ $book->availableCopiesCount() }}/{{ $book->copies->count() }} tersedia</dd></div>
         </dl>
         @can('book.update')
         <hr class="my-4 border-slate-200 dark:border-slate-700">

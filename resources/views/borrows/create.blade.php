@@ -22,7 +22,7 @@
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Buku</label>
                 <select name="book_id" required class="form-select mt-1">
                     <option value="">Pilih buku...</option>
-                    @foreach($books as $b)<option value="{{ $b->id }}">{{ $b->title }} ({{ $b->available }} tersedia)</option>@endforeach
+                    @foreach($books as $b)<option value="{{ $b->id }}">{{ $b->title }}</option>@endforeach
                 </select>
             </div>
             <div>

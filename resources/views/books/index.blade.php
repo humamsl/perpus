@@ -28,7 +28,7 @@
 <div class="card overflow-x-auto">
 <table class="table-pretty">
     <thead>
-        <tr><th>Judul</th><th>ISBN</th><th>Kategori</th><th>Stok</th><th>Status</th><th class="text-right">Aksi</th></tr>
+        <tr><th>Judul</th><th>ISBN</th><th>Kategori</th><th>Status</th><th class="text-right">Aksi</th></tr>
     </thead>
     <tbody>
     @forelse($books as $b)
@@ -36,7 +36,6 @@
             <td><a href="{{ route('books.show', $b) }}" class="font-medium text-primary-600 hover:underline">{{ $b->title }}</a><br><span class="text-xs text-slate-500">{{ $b->authors->pluck('name')->join(', ') }}</span></td>
             <td class="font-mono text-xs">{{ $b->isbn }}</td>
             <td>{{ $b->category?->name }}</td>
-            <td>{{ $b->available }}/{{ $b->stock }}</td>
             <td><span class="badge-{{ $b->status === 'available' ? 'green' : 'yellow' }}">{{ $b->status }}</span></td>
             <td class="text-right whitespace-nowrap">
                 <div class="inline-flex gap-1">
@@ -52,7 +51,7 @@
             </td>
         </tr>
     @empty
-        <tr><td colspan="6" class="text-center text-slate-500 py-10">
+        <tr><td colspan="5" class="text-center text-slate-500 py-10">
             <i class="fas fa-inbox text-3xl mb-2 block text-slate-300"></i>
             Belum ada data buku.
         </td></tr>

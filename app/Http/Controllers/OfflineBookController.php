@@ -21,6 +21,12 @@ class OfflineBookController extends Controller
     public function index(Request $r)
     {
         $items = OfflineBook::with(['readingSpot','publisher','ddcCategory','authors'])
+            ->withCount([
+                'copies as copies_count',
+                'copies as available_copies_count' => fn ($q) => $q->where('condition', '!=', 'lost')
+                    ->whereDoesntHave('checkouts', fn ($c) => $c->where('is_returned', false))
+                    ->whereDoesntHave('holds', fn ($h) => $h->where('status', 'active')),
+            ])
             ->when($r->q, fn($q) => $q->where('title', 'like', "%{$r->q}%")
                                        ->orWhere('isbn', 'like', "%{$r->q}%"))
             ->when($r->reading_spot, fn($q) => $q->where('reading_spot_id', $r->reading_spot))

@@ -62,7 +62,7 @@ class EbookController extends Controller
         $data = $r->validate([
             'title'  => 'required|string|max:255',
             'format' => 'required|in:pdf,epub,docx,pptx,audio,video',
-            'file'   => 'required|file|max:51200',
+            'file'   => 'required|file|max:102400',
             'access' => 'required|in:public,member,staff',
             'downloadable' => 'boolean',
         ]);

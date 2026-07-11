@@ -17,7 +17,6 @@ class CatalogController extends Controller
             ->when($r->author,   fn($q) => $q->whereHas('authors', fn($a) => $a->where('authors.id', $r->author)))
             ->when($r->year,     fn($q) => $q->where('year_published', $r->year))
             ->when($r->language, fn($q) => $q->where('language', $r->language))
-            ->when($r->boolean('only_available'), fn($q) => $q->available())
             ->orderBy(match ($r->sort) {
                 'newest'  => 'created_at',
                 'popular' => 'borrow_count',

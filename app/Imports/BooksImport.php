@@ -54,9 +54,6 @@ class BooksImport implements ToCollection, WithHeadingRow
                     ?? Publisher::create(['name' => $name, 'slug' => $slug]);
             }
 
-            $stock = (int) ($row['stock'] ?? 1);
-            if ($stock < 1) $stock = 1;
-
             $book = Book::create([
                 'isbn'             => $isbn,
                 'title'            => $title,
@@ -69,8 +66,6 @@ class BooksImport implements ToCollection, WithHeadingRow
                 'pages'            => $row['pages'] ?? null,
                 'synopsis'         => trim((string) ($row['synopsis'] ?? '')) ?: null,
                 'keywords'         => trim((string) ($row['keywords'] ?? '')) ?: null,
-                'stock'            => $stock,
-                'available'        => $stock,
                 'barcode'          => 'BK' . Str::upper(Str::random(8)),
                 'qr_code'          => 'QR-' . Str::random(10),
             ]);

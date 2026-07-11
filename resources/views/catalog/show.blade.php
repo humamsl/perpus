@@ -14,7 +14,7 @@
         </div>
         <div class="space-y-2 text-sm">
             <div class="flex justify-between items-center"><span class="text-slate-500 dark:text-slate-400">Rating</span><span class="text-amber-500 font-semibold"><i class="fas fa-star"></i> {{ $book->rating_avg }} ({{ $book->rating_count }})</span></div>
-            <div class="flex justify-between items-center"><span class="text-slate-500 dark:text-slate-400">Tersedia</span><span class="badge-green">{{ $book->available }}/{{ $book->stock }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-slate-500 dark:text-slate-400">Akses</span><span class="badge-green"><i class="fas fa-infinity"></i> Gratis &amp; tanpa batas</span></div>
         </div>
         @auth
         <div class="mt-4 space-y-2">

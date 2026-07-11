@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\BookCategory;
+use App\Models\Ebook;
 use App\Models\Publisher;
 use App\Models\Shelf;
 use Illuminate\Database\Seeder;
@@ -217,8 +218,6 @@ class BookSeeder extends Seeder
                     'synopsis'         => $data['synopsis'],
                     'keywords'         => 'domain publik,klasik,'.Str::slug($data['category']),
                     'status'           => 'available',
-                    'stock'            => 2,
-                    'available'        => 2,
                     'barcode'          => "PD{$data['year']}{$seq}",
                     'qr_code'          => "QR-PD-{$data['year']}-{$seq}",
                 ]
@@ -230,5 +229,69 @@ class BookSeeder extends Seeder
         }
 
         $this->command?->info('BookSeeder selesai: '.count($books).' buku domain publik Indonesia berhasil di-seed.');
+
+        $this->seedDigitalSeries();
+    }
+
+    /**
+     * Contoh nyata buku digital seri terbaru — serial "Bumi" karya Tere Liye
+     * (Gramedia Pustaka Utama), salah satu serial fantasi remaja Indonesia
+     * terpopuler dan masih aktif ditambah judulnya. Setiap judul dibuatkan
+     * satu record Ebook agar tampil sebagai koleksi "baca gratis tanpa batas"
+     * di menu Buku Digital (file e-book memakai path placeholder, bukan
+     * berkas berhak cipta sungguhan).
+     */
+    protected function seedDigitalSeries(): void
+    {
+        $author    = Author::where('slug', Str::slug('Tere Liye'))->first();
+        $publisher = Publisher::where('slug', Str::slug('Gramedia'))->first();
+        $category  = BookCategory::where('slug', Str::slug('Fiksi'))->first();
+        $shelves   = Shelf::pluck('id', 'code');
+
+        $series = [
+            ['title' => 'Bumi', 'year' => 2014, 'synopsis' => 'Buku pertama Serial Bumi: Raib, siswi SMA yang menyadari dirinya bisa menghilang, tertarik ke dunia paralel Klan Bulan bersama Seli dan Ali.'],
+            ['title' => 'Bulan', 'year' => 2015, 'synopsis' => 'Kelanjutan petualangan Raib, Seli, dan Ali menjelajahi Klan Bulan setelah kejadian di dunia paralel pada buku pertama.'],
+            ['title' => 'Matahari', 'year' => 2016, 'synopsis' => 'Petualangan trio Raib, Seli, dan Ali berlanjut ke Klan Matahari, menyingkap konflik yang lebih besar antarklan dunia paralel.'],
+            ['title' => 'Bintang', 'year' => 2017, 'synopsis' => 'Raib, Seli, dan Ali menghadapi ancaman baru di Klan Bintang dalam kelanjutan serial fantasi remaja terpopuler karya Tere Liye ini.'],
+        ];
+
+        foreach ($series as $i => $data) {
+            $seq = str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT);
+
+            $book = Book::updateOrCreate(
+                ['isbn' => "SR-BUMI-{$seq}"],
+                [
+                    'title'            => $data['title'],
+                    'publisher_id'     => $publisher?->id,
+                    'book_category_id' => $category?->id,
+                    'shelf_id'         => $shelves->isNotEmpty() ? $shelves->random() : null,
+                    'year_published'   => $data['year'],
+                    'edition'          => 'Cetakan Terbaru',
+                    'language'         => 'id',
+                    'synopsis'         => $data['synopsis'],
+                    'keywords'         => 'fantasi,remaja,serial bumi,tere liye',
+                    'status'           => 'available',
+                    'barcode'          => "SRBUMI{$seq}",
+                    'qr_code'          => "QR-SR-BUMI-{$seq}",
+                ]
+            );
+
+            if ($author) {
+                $book->authors()->sync([$author->id]);
+            }
+
+            Ebook::updateOrCreate(
+                ['book_id' => $book->id, 'format' => 'epub'],
+                [
+                    'title'        => $data['title'].' (E-Book — Serial Bumi)',
+                    'file_path'    => 'ebooks/serial-bumi-'.$seq.'.epub',
+                    'downloadable' => true,
+                    'watermark'    => true,
+                    'access'       => 'public',
+                ]
+            );
+        }
+
+        $this->command?->info('BookSeeder: '.count($series).' buku digital Serial Bumi (Tere Liye) berhasil di-seed.');
     }
 }

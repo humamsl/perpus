@@ -18,13 +18,9 @@ class BorrowService
 
         return DB::transaction(function () use ($member, $book, $staffId, $days) {
             abort_unless($member->canBorrow(), 422, 'Anggota tidak memenuhi syarat peminjaman.');
-            abort_unless($book->available > 0, 422, 'Stok buku tidak tersedia.');
 
-            $book->decrement('available');
+            // Buku digital tidak dibatasi stok — bisa dibaca gratis dan tanpa batas jumlah pembaca.
             $book->increment('borrow_count');
-            if ($book->fresh()->available === 0) {
-                $book->update(['status' => 'borrowed']);
-            }
 
             return BorrowTransaction::create([
                 'code'        => 'BR-' . Str::upper(Str::random(8)),
@@ -74,14 +70,6 @@ class BorrowService
                     default   => 'returned',
                 },
             ]);
-
-            $book = $tx->book;
-            if ($condition !== 'lost') {
-                $book->increment('available');
-                if ($book->status === 'borrowed') $book->update(['status' => 'available']);
-            } else {
-                $book->decrement('stock');
-            }
 
             if ($fineAmount > 0) {
                 Fine::create([

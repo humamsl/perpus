@@ -41,8 +41,8 @@
                 $isOffline = $book instanceof \App\Models\OfflineBook;
                 $authorLabel = $book->authors->pluck('name')->join(', ') ?: (optional($book->publisher)->name ?? 'Anonim');
                 $stockLabel = $isOffline
-                    ? $book->availableCopiesCount().' tersedia'
-                    : ($book->ebooks->count() > 0 ? '∞' : $book->available.'/'.$book->stock);
+                    ? 'stok : '.$book->availableCopiesCount().'/'.$book->copies()->count().' tersedia'
+                    : 'akses : baca gratis tanpa batas';
             @endphp
             @if(!$isOffline)
                 <a href="{{ route('catalog.show', $book) }}" class="snap-start shrink-0 w-36 md:w-40 group">
@@ -61,7 +61,7 @@
                     </div>
                     <p class="font-semibold text-sm line-clamp-2">{{ $book->title }}</p>
                     <p class="text-xs text-slate-500 mt-1 line-clamp-1">{{ $authorLabel }}</p>
-                    <span class="badge-gray text-[10px] mt-2 self-start">stok : {{ $stockLabel }}</span>
+                    <span class="badge-gray text-[10px] mt-2 self-start">{{ $stockLabel }}</span>
                 </div>
             @if(!$isOffline)
                 </a>

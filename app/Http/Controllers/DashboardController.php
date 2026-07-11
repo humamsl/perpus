@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $stats = [
             'total_books'  => Book::count(),
             'total_ebooks' => Ebook::count(),
-            'available'    => (int) Book::sum('available'),
+            'available'    => Book::where('status', 'available')->count(),
             'borrowed'     => BorrowTransaction::where('status', 'active')->count(),
             'members'      => Member::count(),
             'transactions' => BorrowTransaction::count(),

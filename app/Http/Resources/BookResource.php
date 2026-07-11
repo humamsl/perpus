@@ -18,8 +18,6 @@ class BookResource extends JsonResource
             'language'     => $this->language,
             'year'         => $this->year_published,
             'pages'        => $this->pages,
-            'available'    => $this->available,
-            'stock'        => $this->stock,
             'status'       => $this->status,
             'rating'       => (float) $this->rating_avg,
             'rating_count' => $this->rating_count,

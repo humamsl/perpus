@@ -31,7 +31,7 @@
     <th>Judul</th>
     <th>DDC</th>
     <th>Reading Spot</th>
-    <th>Kopi</th>
+    <th>Stok</th>
     <th>Sumber</th>
     <th class="text-right">Aksi</th>
 </tr></thead>
@@ -44,7 +44,7 @@
         </td>
         <td class="font-mono text-xs">{{ $b->ddcCategory?->code }}</td>
         <td class="text-xs">{{ $b->readingSpot?->name }}</td>
-        <td>{{ $b->copies_count ?? $b->copies()->count() }}</td>
+        <td>{{ $b->available_copies_count }}/{{ $b->copies_count }}</td>
         <td>{{ $b->source }}</td>
         <td class="text-right whitespace-nowrap">
             <div class="inline-flex gap-1">

@@ -39,7 +39,6 @@
                         <tr><td class="font-mono text-xs">edition</td><td><span class="badge-gray">Opsional</span></td><td>Edisi/cetakan</td><td>Cetakan ke-3</td></tr>
                         <tr><td class="font-mono text-xs">language</td><td><span class="badge-gray">Opsional</span></td><td>Kode bahasa</td><td>id</td></tr>
                         <tr><td class="font-mono text-xs">pages</td><td><span class="badge-gray">Opsional</span></td><td>Jumlah halaman</td><td>248</td></tr>
-                        <tr><td class="font-mono text-xs">stock</td><td><span class="badge-gray">Opsional</span></td><td>Jumlah stok (default 1)</td><td>5</td></tr>
                         <tr><td class="font-mono text-xs">category</td><td><span class="badge-gray">Opsional</span></td><td>Nama kategori &mdash; dibuat otomatis kalau belum ada</td><td>Fiksi</td></tr>
                         <tr><td class="font-mono text-xs">publisher</td><td><span class="badge-gray">Opsional</span></td><td>Nama penerbit &mdash; dibuat otomatis kalau belum ada</td><td>Bentang Pustaka</td></tr>
                         <tr><td class="font-mono text-xs">authors</td><td><span class="badge-gray">Opsional</span></td><td>Nama penulis, pisahkan dengan <strong>koma</strong> kalau lebih dari satu &mdash; dibuat otomatis</td><td>Andrea Hirata</td></tr>
@@ -56,10 +55,10 @@
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Begini kira-kira isi spreadsheet-nya setelah header (untuk kolom yang tidak muat, kolom lain di sebelah kanan disembunyikan).</p>
             <div class="overflow-x-auto -mx-6">
                 <table class="table-pretty text-xs">
-                    <thead><tr><th>isbn</th><th>title</th><th>stock</th><th>category</th><th>publisher</th><th>authors</th></tr></thead>
+                    <thead><tr><th>isbn</th><th>title</th><th>category</th><th>publisher</th><th>authors</th></tr></thead>
                     <tbody>
-                        <tr><td class="font-mono">9789793062792</td><td>Laskar Pelangi</td><td>5</td><td>Fiksi</td><td>Bentang Pustaka</td><td>Andrea Hirata</td></tr>
-                        <tr><td class="font-mono text-slate-400 italic">(kosong)</td><td>Bumi Manusia</td><td>3</td><td>Sejarah</td><td>Hasta Mitra</td><td>Pramoedya Ananta Toer</td></tr>
+                        <tr><td class="font-mono">9789793062792</td><td>Laskar Pelangi</td><td>Fiksi</td><td>Bentang Pustaka</td><td>Andrea Hirata</td></tr>
+                        <tr><td class="font-mono text-slate-400 italic">(kosong)</td><td>Bumi Manusia</td><td>Sejarah</td><td>Hasta Mitra</td><td>Pramoedya Ananta Toer</td></tr>
                     </tbody>
                 </table>
             </div>

@@ -13,7 +13,7 @@ class Book extends Model
     protected $fillable = [
         'isbn', 'title', 'subtitle', 'publisher_id', 'book_category_id', 'shelf_id',
         'year_published', 'edition', 'language', 'pages', 'cover', 'images', 'synopsis',
-        'keywords', 'status', 'stock', 'available', 'barcode', 'qr_code', 'location',
+        'keywords', 'status', 'barcode', 'qr_code', 'location',
         'view_count', 'borrow_count', 'rating_avg', 'rating_count',
     ];
 
@@ -33,8 +33,6 @@ class Book extends Model
     public function reservations(){ return $this->hasMany(Reservation::class); }
     public function reviews()     { return $this->hasMany(Review::class)->where('is_hidden', false); }
     public function wishedBy()    { return $this->belongsToMany(User::class, 'wishlists')->withPivot('created_at'); }
-
-    public function scopeAvailable($q) { return $q->where('available', '>', 0); }
 
     public function scopeSearch($q, ?string $term)
     {

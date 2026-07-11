@@ -29,7 +29,6 @@ class UpdateBookRequest extends FormRequest
             'cover'            => ['nullable','image','max:5120'],
             'synopsis'         => ['nullable','string'],
             'keywords'         => ['nullable','string','max:255'],
-            'stock'            => ['required','integer','min:0','max:9999'],
             'authors'          => ['nullable','array'],
             'authors.*'        => ['integer','exists:authors,id'],
         ];
