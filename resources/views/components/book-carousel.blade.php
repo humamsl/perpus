@@ -7,6 +7,27 @@
     'accent' => 'primary',
 ])
 
+@php
+    // Class Tailwind harus muncul sebagai teks literal di source supaya ke-scan build
+    // (bukan digabung lewat interpolasi seperti "from-{{ $accent }}-500") — kalau tidak,
+    // CSS-nya tidak pernah dibuat oleh Tailwind versi build (beda dari CDN lama yang
+    // scan langsung ke HTML browser saat runtime.
+    $accentClasses = match ($accent) {
+        'teal' => [
+            'tile'  => 'from-teal-500 to-teal-800',
+            'cover' => 'from-teal-100 to-teal-200',
+            'icon'  => 'text-teal-600',
+            'dot'   => 'bg-teal-600',
+        ],
+        default => [
+            'tile'  => 'from-primary-500 to-primary-800',
+            'cover' => 'from-primary-100 to-primary-200',
+            'icon'  => 'text-primary-600',
+            'dot'   => 'bg-primary-600',
+        ],
+    };
+@endphp
+
 <section class="mb-10" x-data="{
         active: 0,
         onScroll() {
@@ -24,7 +45,7 @@
          class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden">
 
         {{-- Tile judul/ringkasan, sekaligus item pertama carousel --}}
-        <div class="snap-start shrink-0 w-52 md:w-56 rounded-2xl p-5 flex flex-col justify-between text-white bg-gradient-to-br from-{{ $accent }}-500 to-{{ $accent }}-800">
+        <div class="snap-start shrink-0 w-52 md:w-56 rounded-2xl p-5 flex flex-col justify-between text-white bg-gradient-to-br {{ $accentClasses['tile'] }}">
             <div>
                 <i class="fas {{ $icon }} text-2xl opacity-80"></i>
                 <p class="font-bold text-lg mt-3 leading-snug">{{ $title }} ({{ $count }})</p>
@@ -50,11 +71,11 @@
                 <div class="snap-start shrink-0 w-36 md:w-40 group">
             @endif
                 <div class="card-tight h-full flex flex-col hover:shadow-hover transition group-hover:-translate-y-1">
-                    <div class="aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-gradient-to-br from-{{ $accent }}-100 to-{{ $accent }}-200">
+                    <div class="aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-gradient-to-br {{ $accentClasses['cover'] }}">
                         @if($book->cover)
                             <img src="{{ asset('storage/'.$book->cover) }}" class="w-full h-full object-cover" loading="lazy">
                         @else
-                            <div class="absolute inset-0 flex items-center justify-center text-{{ $accent }}-600">
+                            <div class="absolute inset-0 flex items-center justify-center {{ $accentClasses['icon'] }}">
                                 <i class="fas {{ $icon }} text-3xl"></i>
                             </div>
                         @endif
@@ -79,7 +100,7 @@
         @for($i = 0; $i < 3; $i++)
             <button type="button" @click="goTo({{ $i }})"
                     class="h-1.5 rounded-full transition-all"
-                    :class="active === {{ $i }} ? 'w-6 bg-{{ $accent }}-600' : 'w-1.5 bg-slate-300'"></button>
+                    :class="active === {{ $i }} ? 'w-6 {{ $accentClasses['dot'] }}' : 'w-1.5 bg-slate-300'"></button>
         @endfor
     </div>
 </section>

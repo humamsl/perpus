@@ -13,7 +13,18 @@
 ])
 
 <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-    @php $cards = [
+    @php
+        // Class Tailwind harus muncul literal di source supaya ke-scan build Vite (tidak
+        // bisa lewat interpolasi seperti "bg-{{ $color }}-100" — beda dari CDN lama yang
+        // scan langsung ke HTML browser saat runtime).
+        $colorClasses = [
+            'blue'    => 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+            'primary' => 'bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300',
+            'green'   => 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+            'yellow'  => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
+            'purple'  => 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+        ];
+        $cards = [
         ['Anggota', $stats['members'], 'fa-users', 'blue'],
         ['Buku Digital', $stats['books'], 'fa-book', 'primary'],
         ['Buku Fisik', $stats['offline_books'], 'fa-book-open', 'green'],
@@ -23,7 +34,7 @@
     ]; @endphp
     @foreach($cards as [$label,$value,$icon,$color])
         <div class="card-tight text-center">
-            <div class="h-9 w-9 rounded-lg bg-{{ $color }}-100 text-{{ $color }}-700 dark:bg-{{ $color }}-900/40 dark:text-{{ $color }}-300 mx-auto mb-2 flex items-center justify-center">
+            <div class="h-9 w-9 rounded-lg {{ $colorClasses[$color] }} mx-auto mb-2 flex items-center justify-center">
                 <i class="fas {{ $icon }} text-sm"></i>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">{{ $label }}</p>
