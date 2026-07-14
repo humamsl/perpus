@@ -1,10 +1,10 @@
 <aside
-    class="app-sidebar fixed inset-y-0 left-0 z-40 flex flex-col text-slate-300 transition-transform duration-200 shadow-2xl md:shadow-none
+    class="app-sidebar fixed inset-y-0 left-0 z-40 flex flex-col text-slate-300 transition-[width,transform] duration-200
            bg-gradient-to-b from-[#15122b] via-[#13112a] to-[#0d0b1d]"
-    :class="{
-        'is-sidebar-open': $store.sidebar.open,
-        '-translate-x-full md:translate-x-0': !$store.sidebar.mobileOpen,
-        'translate-x-0': $store.sidebar.mobileOpen,
+    :class="{ 'shadow-2xl': !$store.sidebar.isDesktop }"
+    :style="{
+        width: $store.sidebar.isDesktop ? ($store.sidebar.open ? '16rem' : '4rem') : '16rem',
+        transform: (!$store.sidebar.isDesktop && !$store.sidebar.mobileOpen) ? 'translateX(-100%)' : 'translateX(0)',
     }">
     
     <div class="flex items-center h-16 px-4 border-b border-white/5">

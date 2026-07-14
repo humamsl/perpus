@@ -71,15 +71,10 @@
     .table-pretty tbody tr { @apply hover:bg-primary-50/50 dark:hover:bg-slate-700/30 transition; }
     .skeleton { @apply animate-pulse rounded bg-slate-200 dark:bg-slate-700; }
 
-    /* Offset konten terhadap sidebar fixed. Ditulis sebagai CSS biasa (bukan class
-       Tailwind yang ditoggle lewat Alpine :class) supaya nilainya SELALU ter-compile,
-       tidak bergantung ke scanning JIT Tailwind CDN saat runtime. Ini yang mencegah
-       konten "ketutup"/terpotong oleh sidebar di beberapa kondisi layar. */
-    .app-sidebar { width: 4rem; transition: width .2s ease; }
-    .app-sidebar.is-sidebar-open { width: 16rem; }
-    .app-shell { margin-left: 0; }
-    @media (min-width: 768px) {
-        .app-shell { margin-left: 4rem; transition: margin-left .2s ease; }
-        .app-shell.is-sidebar-open { margin-left: 16rem; }
-    }
+    /* Lebar sidebar & offset app-shell dikendalikan lewat :style Alpine (lihat
+       partials/sidebar.blade.php & layouts/app.blade.php), BUKAN class + @media —
+       beberapa versi Chromium gagal invalidate rule @media saat class-nya diubah
+       lewat reactivity Alpine setelah render awal, membuat sidebar menutupi konten.
+       Transition di sini tetap berlaku karena berlaku permanen (tidak bersyarat class). */
+    .app-shell { transition: margin-left .2s ease; }
 }

@@ -19,11 +19,21 @@ document.addEventListener('alpine:init', () => {
     Alpine.store('sidebar', {
         open: localStorage.getItem('sidebar') !== 'closed',
         mobileOpen: false,
+        isDesktop: window.matchMedia('(min-width: 768px)').matches,
         toggle() {
             this.open = !this.open;
             localStorage.setItem('sidebar', this.open ? 'open' : 'closed');
         },
         toggleMobile() { this.mobileOpen = !this.mobileOpen; },
+    });
+
+    // Lebar/margin app-shell & sidebar dikendalikan lewat :style (bukan class + @media)
+    // karena beberapa Chromium versi tertentu gagal invalidate style rule bersyarat
+    // @media saat class-nya diubah lewat reactivity Alpine setelah render awal —
+    // ini menyebabkan sidebar menutupi konten. Inline style lewat JS selalu akurat.
+    const desktopQuery = window.matchMedia('(min-width: 768px)');
+    desktopQuery.addEventListener('change', (e) => {
+        Alpine.store('sidebar').isDesktop = e.matches;
     });
 
     Alpine.data('toast', () => ({

@@ -25,7 +25,8 @@
          x-transition.opacity
          class="md:hidden fixed inset-0 bg-black/50 z-30"></div>
 
-    <div class="app-shell flex-1 min-h-screen min-w-0" :class="{ 'is-sidebar-open': $store.sidebar.open }">
+    <div class="app-shell flex-1 min-h-screen min-w-0"
+         :style="{ marginLeft: $store.sidebar.isDesktop ? ($store.sidebar.open ? '16rem' : '4rem') : '0' }">
         @include('partials.topbar')
         <main class="p-4 md:p-6 max-w-screen-2xl mx-auto min-w-0">
             @include('partials.breadcrumb')
