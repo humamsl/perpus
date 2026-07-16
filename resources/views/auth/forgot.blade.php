@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('fullscreen', 'yes')
 @section('title','Lupa Password')
 @section('content')
 <div class="min-h-screen flex bg-slate-50 dark:bg-slate-900">

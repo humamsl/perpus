@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('fullscreen', 'yes')
 @section('title', 'Login Guru')
 @section('content')
 <div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-slate-50 dark:bg-slate-900">

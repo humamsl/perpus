@@ -52,7 +52,13 @@
     </div>
 </div>
 @else
-    @yield('content')
+    @hasSection('fullscreen')
+        @yield('content')
+    @else
+        @include('partials.guest-header')
+        @yield('content')
+        @include('partials.guest-footer')
+    @endif
 @endauth
 
 @include('partials.toast')

@@ -2,42 +2,6 @@
 <?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
     
-    <header class="bg-gradient-to-r from-primary-600 to-primary-800 text-white sticky top-0 z-30 shadow-lg">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3">
-                <?php if(!empty($appProfile->logo)): ?>
-                    <img src="<?php echo e(asset('storage/'.$appProfile->logo)); ?>" class="h-10 w-10 rounded-lg object-cover shadow" alt="Logo">
-                <?php else: ?>
-                    <div class="h-10 w-10 rounded-lg bg-white text-primary-600 flex items-center justify-center text-xl shadow">
-                        <i class="fas fa-book-open-reader"></i>
-                    </div>
-                <?php endif; ?>
-                <div>
-                    <p class="font-bold text-lg leading-tight"><?php echo e($appProfile->app_name ?? config('app.name')); ?></p>
-                    <p class="text-xs opacity-90"><?php echo e(\Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y')); ?></p>
-                </div>
-            </a>
-            <nav class="hidden md:flex items-center gap-6 text-sm">
-                <a href="/" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-home"></i> Beranda</a>
-                <a href="<?php echo e(route('catalog.index')); ?>" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-compass"></i> Katalog</a>
-                <a href="#spots" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-location-dot"></i> Lokasi</a>
-                <!--<a href="#fitur" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-star"></i> Fitur</a> -->
-            </nav>
-            <div class="flex items-center gap-2">
-                <?php if(auth()->guard()->check()): ?>
-                    <a href="<?php echo e(route('dashboard')); ?>" class="btn-accent">
-                        <i class="fas fa-gauge-high"></i> Dashboard
-                    </a>
-                <?php else: ?>
-                    <a href="<?php echo e(route('login')); ?>" class="bg-white text-primary-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-slate-100">
-                        <i class="fas fa-right-to-bracket"></i> Masuk
-                    </a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </header>
-
-    
     <section class="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
         <div class="container mx-auto px-4 py-16 md:py-24">
             <div class="grid md:grid-cols-2 gap-8 items-center">
@@ -419,20 +383,6 @@
         </div>
     </section>
 
-    <footer class="bg-slate-900 text-slate-400 py-8">
-        <div class="container mx-auto px-4 flex flex-wrap justify-between gap-4 text-sm">
-            <div>
-                <p class="font-bold text-white"><?php echo e($appProfile->app_name ?? config('app.name')); ?></p>
-                <p class="text-xs mt-1">&copy; <?php echo e(date('Y')); ?> <?php echo e($appProfile->app_name ?? config('app.name')); ?>. All rights reserved.</p>
-            </div>
-            <div class="flex gap-4 text-xs">
-                <a href="<?php echo e(route('catalog.index')); ?>" class="hover:text-white">Katalog</a>
-                <a href="#fitur" class="hover:text-white">Fitur</a>
-                <a href="#spots" class="hover:text-white">Lokasi</a>
-                <?php if(auth()->guard()->guest()): ?> <a href="<?php echo e(route('register')); ?>" class="hover:text-white">Daftar</a> <?php endif; ?>
-            </div>
-        </div>
-    </footer>
 </div>
 
 <link rel="stylesheet" href="<?php echo e(asset('vendor/leaflet/dist/leaflet.css')); ?>">
