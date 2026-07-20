@@ -39,6 +39,7 @@
                 <th>Pengunjung</th>
                 <th>Halaman</th>
                 <th>IP</th>
+                <th>Lokasi</th>
                 <th>User Agent</th>
             </tr>
         </thead>
@@ -49,11 +50,20 @@
                 <td>{{ $l->user?->name ?? 'Tamu' }}</td>
                 <td class="font-mono text-xs">{{ $l->path }}</td>
                 <td class="font-mono text-xs">{{ $l->ip_address }}</td>
+                <td>
+                    @if($l->map_url)
+                        <a href="{{ $l->map_url }}" target="_blank" rel="noopener" class="text-primary-600 hover:underline text-xs whitespace-nowrap">
+                            <i class="fas fa-map-pin"></i> Lihat peta
+                        </a>
+                    @else
+                        <span class="text-xs text-slate-400">-</span>
+                    @endif
+                </td>
                 <td class="text-xs text-slate-500 truncate max-w-xs block" title="{{ $l->user_agent }}">{{ $l->user_agent }}</td>
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center text-slate-500 py-10">
+                <td colspan="6" class="text-center text-slate-500 py-10">
                     <i class="fas fa-inbox text-3xl mb-2 block text-slate-300"></i>
                     Belum ada data.
                 </td>

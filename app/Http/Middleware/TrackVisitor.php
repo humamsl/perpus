@@ -17,7 +17,7 @@ class TrackVisitor
 
         try {
             if ($request->isMethod('GET') && !$request->ajax() && !$request->wantsJson() && !$request->is($this->except)) {
-                VisitorLog::create([
+                $log = VisitorLog::create([
                     'user_id'    => $request->user()?->id,
                     'path'       => '/' . ltrim($request->path(), '/'),
                     'method'     => $request->method(),
@@ -25,6 +25,10 @@ class TrackVisitor
                     'user_agent' => substr((string) $request->userAgent(), 0, 500),
                     'referer'    => substr((string) $request->headers->get('referer'), 0, 500),
                 ]);
+
+                if ($request->hasSession()) {
+                    $request->session()->put('visitor_log_id', $log->id);
+                }
             }
         } catch (Throwable $e) {
             logger()->warning('TrackVisitor gagal: ' . $e->getMessage());

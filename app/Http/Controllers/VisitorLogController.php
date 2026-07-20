@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AppProfile;
 use App\Models\VisitorLog;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class VisitorLogController extends Controller
@@ -54,5 +55,21 @@ class VisitorLogController extends Controller
         ];
 
         return Pdf::loadView('visitors.pdf', $data)->download('riwayat-pengunjung-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    /** Dipanggil dari browser pengunjung jika izin lokasi diberikan; hanya boleh mengisi log kunjungannya sendiri (via session). */
+    public function updateLocation(Request $request)
+    {
+        $data = $request->validate([
+            'latitude'  => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+        ]);
+
+        $logId = $request->session()->get('visitor_log_id');
+        if ($logId) {
+            VisitorLog::whereKey($logId)->whereNull('latitude')->update($data);
+        }
+
+        return response()->noContent();
     }
 }

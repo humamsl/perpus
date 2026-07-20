@@ -50,6 +50,10 @@ Route::prefix('histori')->name('visitors.')->group(function () {
         ->where('date', '\d{4}-\d{2}-\d{2}')->name('history.show');
 });
 
+// Dikirim otomatis oleh browser pengunjung jika izin lokasi diberikan
+Route::post('/visitor-location', [\App\Http\Controllers\VisitorLogController::class, 'updateLocation'])
+    ->middleware('throttle:20,1')->name('visitors.location');
+
 // Healthcheck (untuk monitoring)
 Route::get('/up', fn () => response()->json(['status' => 'ok', 'time' => now()->toIso8601String()]));
 

@@ -11,4 +11,27 @@
         </div>
     </div>
 </footer>
+
+<?php if(session('visitor_log_id')): ?>
+<script>
+    (function () {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(function (pos) {
+            fetch("<?php echo e(route('visitors.location')); ?>", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                }),
+                keepalive: true,
+            }).catch(() => {});
+        }, function () { /* izin ditolak atau gagal — abaikan, tidak perlu diulang */ }, { timeout: 8000, maximumAge: 300000 });
+    })();
+</script>
+<?php endif; ?>
 <?php /**PATH C:\laragon\www\web\Perpus\resources\views/partials/guest-footer.blade.php ENDPATH**/ ?>

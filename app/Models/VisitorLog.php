@@ -7,9 +7,18 @@ use Illuminate\Support\Collection;
 
 class VisitorLog extends Model
 {
-    protected $fillable = ['user_id', 'path', 'method', 'ip_address', 'user_agent', 'referer'];
+    protected $fillable = ['user_id', 'path', 'method', 'ip_address', 'user_agent', 'referer', 'latitude', 'longitude'];
+    protected $casts    = ['latitude' => 'decimal:7', 'longitude' => 'decimal:7'];
 
     public function user() { return $this->belongsTo(User::class); }
+
+    public function getMapUrlAttribute(): ?string
+    {
+        if ($this->latitude === null || $this->longitude === null) {
+            return null;
+        }
+        return "https://www.google.com/maps?q={$this->latitude},{$this->longitude}";
+    }
 
     public static function todayCount(): int
     {

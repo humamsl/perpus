@@ -38,6 +38,7 @@
                 <th>Pengunjung</th>
                 <th>Halaman</th>
                 <th>IP</th>
+                <th>Lokasi</th>
                 <th>User Agent</th>
             </tr>
         </thead>
@@ -48,11 +49,20 @@
                 <td><?php echo e($l->user?->name ?? 'Tamu'); ?></td>
                 <td class="font-mono text-xs"><?php echo e($l->path); ?></td>
                 <td class="font-mono text-xs"><?php echo e($l->ip_address); ?></td>
+                <td>
+                    <?php if($l->map_url): ?>
+                        <a href="<?php echo e($l->map_url); ?>" target="_blank" rel="noopener" class="text-primary-600 hover:underline text-xs whitespace-nowrap">
+                            <i class="fas fa-map-pin"></i> Lihat peta
+                        </a>
+                    <?php else: ?>
+                        <span class="text-xs text-slate-400">-</span>
+                    <?php endif; ?>
+                </td>
                 <td class="text-xs text-slate-500 truncate max-w-xs block" title="<?php echo e($l->user_agent); ?>"><?php echo e($l->user_agent); ?></td>
             </tr>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <tr>
-                <td colspan="5" class="text-center text-slate-500 py-10">
+                <td colspan="6" class="text-center text-slate-500 py-10">
                     <i class="fas fa-inbox text-3xl mb-2 block text-slate-300"></i>
                     Belum ada data.
                 </td>
