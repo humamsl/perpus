@@ -71,7 +71,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="md:col-span-2">
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">File</label>
-                <input type="file" name="ebook_file" class="form-input mt-1">
+                <input type="file" name="ebook_file" class="form-input mt-1"
+                       accept=".pdf,.epub,.docx,.pptx,.mp3,.m4a,.wav,.mp4,.webm">
+                <p class="form-hint mt-1">
+                    Maks. 100 MB per file (batas server saat ini:
+                    {{ ini_get('upload_max_filesize') }}). Format: PDF, EPUB, DOCX, PPTX, audio, video.
+                </p>
+                @error('ebook_file')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
             </div>
             <div>
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Format</label>
@@ -79,6 +85,7 @@
                     <option value="">—</option>
                     @foreach(['pdf','epub','docx','pptx','audio','video'] as $f)<option value="{{ $f }}" @selected(old('ebook_format')===$f)>{{ $f }}</option>@endforeach
                 </select>
+                @error('ebook_format')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
             </div>
             <div>
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Akses</label>

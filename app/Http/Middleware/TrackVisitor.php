@@ -13,8 +13,9 @@ class TrackVisitor
 
     public function handle(Request $request, Closure $next)
     {
-        $response = $next($request);
-
+        // Dicatat SEBELUM $next() dipanggil: view (termasuk script lokasi di guest-footer)
+        // dirender di dalam $next(), jadi session('visitor_log_id') harus sudah di-set
+        // lebih dulu agar merujuk ke kunjungan halaman ini, bukan halaman sebelumnya.
         try {
             if ($request->isMethod('GET') && !$request->ajax() && !$request->wantsJson() && !$request->is($this->except)) {
                 $log = VisitorLog::create([
@@ -34,6 +35,6 @@ class TrackVisitor
             logger()->warning('TrackVisitor gagal: ' . $e->getMessage());
         }
 
-        return $response;
+        return $next($request);
     }
 }
