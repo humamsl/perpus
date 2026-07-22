@@ -74,8 +74,9 @@
                 <input type="file" name="ebook_file" class="form-input mt-1"
                        accept=".pdf,.epub,.docx,.pptx,.mp3,.m4a,.wav,.mp4,.webm">
                 <p class="form-hint mt-1">
-                    Maks. 100 MB per file (batas server saat ini:
-                    {{ ini_get('upload_max_filesize') }}). Format: PDF, EPUB, DOCX, PPTX, audio, video.
+                    <!--setting max upload file di php.ini tidak bisa diubah di sini, jadi jika ingin mengunggah file lebih besar dari 100 MB, silakan ubah settingan servernya.-->
+                    Maks. 100 MB per file <!--(batas server saat ini:
+                    {{ ini_get('upload_max_filesize') }})-->. Format: PDF, EPUB, DOCX, PPTX, audio, video.
                 </p>
                 @error('ebook_file')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
             </div>
