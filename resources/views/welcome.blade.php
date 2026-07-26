@@ -2,7 +2,7 @@
 @section('title', $appProfile->app_name ?? config('app.name'))
 @section('content')
 <div class="min-h-screen bg-slate-50 dark:bg-slate-900"
-     style="background-image: linear-gradient(rgba(248,250,252,.55), rgba(248,250,252,.55)), url('{{ asset('img/perpus-bg.jpg') }}');
+     style="background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('{{ asset('img/perpus-bg.jpg') }}');
             background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;">
     {{-- Hero --}}
     <section class="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
