@@ -28,7 +28,10 @@ class LoginController extends Controller
             'last_login_ip' => $r->ip(),
         ])->save();
 
-        return redirect()->intended(route('dashboard'));
+        // Setelah login arahkan ke halaman welcome; dashboard bisa diakses
+        // lewat menu profil di header. intended() tetap dipakai agar deep-link
+        // ke halaman terproteksi kembali ke tujuan semula.
+        return redirect()->intended(route('home'));
     }
 
     public function logout(Request $r)

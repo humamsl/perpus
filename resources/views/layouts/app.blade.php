@@ -16,7 +16,9 @@
 </head>
 <body class="min-h-screen antialiased" x-data="{ ...toast() }">
 
-@auth
+{{-- Halaman welcome (home) selalu tampil sebagai halaman publik dengan
+     guest-header — user yang sudah login masuk dashboard lewat menu profil. --}}
+@if (auth()->check() && ! request()->routeIs('home'))
 <div class="flex">
     @include('partials.sidebar')
     {{-- Mobile sidebar overlay --}}
@@ -59,7 +61,7 @@
         @yield('content')
         @include('partials.guest-footer')
     @endif
-@endauth
+@endif
 
 @include('partials.toast')
 </body>

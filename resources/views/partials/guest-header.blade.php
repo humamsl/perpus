@@ -25,9 +25,45 @@
                 <span>Pengunjung Bulan Ini : <b>{{ number_format(\App\Models\VisitorLog::monthCount()) }}</b>, Hari Ini : <b>{{ number_format(\App\Models\VisitorLog::todayCount()) }}</b></span>
             </div>
             @auth
-                <a href="{{ route('dashboard') }}" class="btn-accent">
-                    <i class="fas fa-gauge-high"></i> Dashboard
-                </a>
+                {{-- Menu profil user login: arahkan ke dashboard sesuai role --}}
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open"
+                            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition">
+                        @if(auth()->user()->avatar)
+                            <img src="{{ asset('storage/'.auth()->user()->avatar) }}" class="h-8 w-8 rounded-full object-cover" alt="Avatar">
+                        @else
+                            <span class="h-8 w-8 rounded-full bg-white text-primary-700 flex items-center justify-center font-bold text-sm">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </span>
+                        @endif
+                        <span class="hidden sm:block text-sm font-semibold max-w-[9rem] truncate">{{ auth()->user()->name }}</span>
+                        <i class="fas fa-chevron-down text-xs opacity-80" :class="open && 'rotate-180'"></i>
+                    </button>
+                    <div x-show="open" @click.outside="open = false" x-cloak
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl ring-1 ring-black/5 py-2 text-slate-700 dark:text-slate-200 z-50">
+                        <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
+                            <p class="font-semibold text-sm truncate">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
+                                {{ str_replace('_', ' ', auth()->user()->getRoleNames()->first() ?? 'member') }}
+                            </p>
+                        </div>
+                        <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <i class="fas fa-gauge-high w-4 text-primary-500"></i> Dashboard
+                        </a>
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <i class="fas fa-user w-4 text-primary-500"></i> Profil Saya
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}" class="border-t border-slate-100 dark:border-slate-700 mt-1 pt-1">
+                            @csrf
+                            <button class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700 text-left">
+                                <i class="fas fa-right-from-bracket w-4"></i> Keluar
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @else
                 <a href="{{ route('login') }}" class="bg-white text-primary-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-slate-100">
                     <i class="fas fa-right-to-bracket"></i> Masuk

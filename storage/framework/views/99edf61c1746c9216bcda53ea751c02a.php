@@ -15,7 +15,8 @@
 </head>
 <body class="min-h-screen antialiased" x-data="{ ...toast() }">
 
-<?php if(auth()->guard()->check()): ?>
+
+<?php if(auth()->check() && ! request()->routeIs('home')): ?>
 <div class="flex">
     <?php echo $__env->make('partials.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     

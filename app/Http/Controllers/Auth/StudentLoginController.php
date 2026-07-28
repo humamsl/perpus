@@ -53,6 +53,6 @@ class StudentLoginController extends Controller
             'last_login_ip' => $r->ip(),
         ])->save();
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('home'));
     }
 }
