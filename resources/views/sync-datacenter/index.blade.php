@@ -74,13 +74,13 @@
             </p>
         </div>
 
-        <div class="card">
+        <!-- <div class="card">
             <h2 class="font-bold text-lg mb-2"><i class="fas fa-clock text-primary-600"></i> Otomatisasi (Opsional)</h2>
             <p class="text-sm text-slate-600 dark:text-slate-300">
                 Supaya anggota baru di Data Center otomatis terdaftar tanpa perlu klik manual, jadwalkan perintah berikut lewat cron di server (mis. tiap 10 menit):
             </p>
             <code class="block mt-2 text-xs bg-slate-100 dark:bg-slate-900 rounded-lg p-3 font-mono">php artisan datacenter:sync</code>
-        </div>
+        </div>-->
     </div>
 
     <div class="lg:col-span-1">

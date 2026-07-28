@@ -257,13 +257,18 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::get('visitor-logs',        [\App\Http\Controllers\VisitorLogController::class, 'index'])->name('visitors.index');
         Route::get('visitor-logs/export', [\App\Http\Controllers\VisitorLogController::class, 'export'])->name('visitors.export');
 
-        // Backup & restore
-        Route::prefix('backups')->name('backups.')->group(function () {
-            Route::get('/',                [\App\Http\Controllers\BackupController::class, 'index'])->name('index');
-            Route::post('/run',            [\App\Http\Controllers\BackupController::class, 'run'])->name('run');
-            Route::get('/download/{file}', [\App\Http\Controllers\BackupController::class, 'download'])->name('download');
-            Route::delete('/{file}',       [\App\Http\Controllers\BackupController::class, 'destroy'])->name('destroy');
-        });
+        // Reset data — hapus semua data transaksi/keanggotaan,
+        // sisakan data buku & akun admin/super admin
+        Route::get('data-reset',       [\App\Http\Controllers\DataResetController::class, 'index'])->name('data-reset.index');
+        Route::post('data-reset/run',  [\App\Http\Controllers\DataResetController::class, 'run'])->name('data-reset.run');
+    });
+
+    // Backup & restore — super admin dan admin
+    Route::middleware('role:super_admin|admin')->prefix('backups')->name('backups.')->group(function () {
+        Route::get('/',                [\App\Http\Controllers\BackupController::class, 'index'])->name('index');
+        Route::post('/run',            [\App\Http\Controllers\BackupController::class, 'run'])->name('run');
+        Route::get('/download/{file}', [\App\Http\Controllers\BackupController::class, 'download'])->name('download');
+        Route::delete('/{file}',       [\App\Http\Controllers\BackupController::class, 'destroy'])->name('destroy');
     });
 
     // Settings (super admin atau permission setting.manage)

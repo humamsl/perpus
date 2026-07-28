@@ -52,6 +52,8 @@
                     ['route' => 'users.index',           'label' => 'Manajemen User',     'icon' => 'fas fa-user-shield','perm' => 'user.manage'],
                     ['route' => 'sync-datacenter.index', 'label' => 'Sinkronisasi Data',  'icon' => 'fas fa-rotate',     'perm' => 'member.create'],
                     ['route' => 'settings.index',        'label' => 'Pengaturan',         'icon' => 'fas fa-gear',       'perm' => 'setting.manage'],
+                    ['route' => 'backups.index',         'label' => 'Backup Database',    'icon' => 'fas fa-database',   'role' => ['super_admin', 'admin']],
+                    ['route' => 'data-reset.index',      'label' => 'Reset Data',         'icon' => 'fas fa-eraser',     'role' => 'super_admin'],
                 ],
             ];
         @endphp
@@ -61,7 +63,7 @@
             </p>
             <div x-show="!$store.sidebar.open" x-cloak class="border-t border-white/5 my-2 mx-3"></div>
             @foreach($links as $l)
-                @if(empty($l['perm']) || auth()->user()->can($l['perm']))
+                @if((empty($l['perm']) || auth()->user()->can($l['perm'])) && (empty($l['role']) || auth()->user()->hasRole($l['role'])))
                     @php
                         $active = request()->routeIs($l['route']);
                         $url = \Illuminate\Support\Facades\Route::has($l['route']) ? route($l['route']) : '#';

@@ -63,7 +63,7 @@
                 $authorLabel = $book->authors->pluck('name')->join(', ') ?: (optional($book->publisher)->name ?? 'Anonim');
                 $stockLabel = $isOffline
                     ? 'stok : '.$book->availableCopiesCount().'/'.$book->copies()->count().' tersedia'
-                    : 'akses : baca gratis tanpa batas';
+                    : '∞';
             @endphp
             @if(!$isOffline)
                 <a href="{{ route('catalog.show', $book) }}" class="snap-start shrink-0 w-36 md:w-40 group">
