@@ -2,6 +2,10 @@
 @section('title', 'Katalog Buku')
 @section('content')
 
+{{-- Guest: layout tidak membungkus konten, beri container sendiri.
+     User login: main layout sudah punya padding, div ini netral. --}}
+<div class="@guest container mx-auto px-4 py-6 md:py-8 @endguest">
+
 @include('partials.page-header', [
     'icon'  => 'fa-compass',
     'title' => 'Katalog Publik',
@@ -96,4 +100,6 @@
     @endforelse
 </div>
 <div class="mt-8">{{ $books->links() }}</div>
+
+</div>
 @endsection

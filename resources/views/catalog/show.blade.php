@@ -1,6 +1,9 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', $book->title)
 @section('content')
+{{-- Guest: layout tidak membungkus konten, beri container sendiri.
+     User login: main layout sudah punya padding, div ini netral. --}}
+<div class="@guest container mx-auto px-4 py-6 md:py-8 @endguest">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="card md:col-span-1">
         <div class="aspect-[3/4] rounded-lg mb-4 overflow-hidden relative bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
@@ -27,14 +30,14 @@
         <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ $book->title }}</h1>
         @if($book->subtitle)<p class="text-slate-500 dark:text-slate-400 mb-3">{{ $book->subtitle }}</p>@endif
         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mb-4 mt-3">
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">ISBN</dt><dd class="font-mono">{{ $book->isbn }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Penulis</dt><dd>{{ $book->authors->pluck('name')->join(', ') ?: '-' }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Penerbit</dt><dd>{{ $book->publisher?->name ?? '-' }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Tahun</dt><dd>{{ $book->year_published }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Kategori</dt><dd>{{ $book->category?->name ?? '-' }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Rak</dt><dd>{{ $book->shelf?->code ?? '-' }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Bahasa</dt><dd>{{ $book->language }}</dd></div>
-            <div class="flex justify-between border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Halaman</dt><dd>{{ $book->pages ?? '-' }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">ISBN</dt><dd class="font-mono">{{ $book->isbn }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Penulis</dt><dd>{{ $book->authors->pluck('name')->join(', ') ?: '-' }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Penerbit</dt><dd>{{ $book->publisher?->name ?? '-' }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Tahun</dt><dd>{{ $book->year_published }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Kategori</dt><dd>{{ $book->category?->name ?? '-' }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Rak</dt><dd>{{ $book->shelf?->code ?? '-' }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Bahasa</dt><dd>{{ $book->language }}</dd></div>
+            <div class="flex justify-between gap-3 border-b border-slate-100 dark:border-slate-700 py-1"><dt class="text-slate-500 dark:text-slate-400">Halaman</dt><dd>{{ $book->pages ?? '-' }}</dd></div>
         </dl>
         @if($book->synopsis)
         <h3 class="font-semibold mt-4 mb-2 text-slate-800 dark:text-slate-100">Sinopsis</h3>
@@ -52,15 +55,15 @@
         </h3>
         <div class="space-y-2 mb-2">
             @forelse($book->ebooks as $eb)
-                <div class="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-100 dark:ring-slate-700 p-3">
-                    <div class="flex items-center gap-3 min-w-0">
+                <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 rounded-xl ring-1 ring-slate-100 dark:ring-slate-700 p-3">
+                    <div class="flex items-center gap-3 min-w-0 flex-1 basis-48">
                         <i class="fas {{ $formatIcons[$eb->format] ?? 'fa-file' }} text-primary-600 text-lg shrink-0"></i>
                         <div class="min-w-0">
                             <p class="font-medium text-sm truncate">{{ $eb->title }}</p>
                             <p class="text-xs text-slate-500 uppercase">{{ $eb->format }} · {{ $eb->view_count }} pembaca</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1 shrink-0">
+                    <div class="flex items-center flex-wrap gap-1">
                         <a href="{{ route('ebooks.read', $eb) }}" class="btn-primary !px-3 !py-1.5 text-xs"><i class="fas fa-book-open"></i> Baca</a>
                         @if($eb->downloadable)
                         <a href="{{ route('ebooks.download', $eb) }}" class="btn-secondary !px-3 !py-1.5 text-xs"><i class="fas fa-download"></i> Unduh</a>
@@ -104,5 +107,6 @@
             @endforelse
         </div>
     </div>
+</div>
 </div>
 @endsection

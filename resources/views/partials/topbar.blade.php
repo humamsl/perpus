@@ -1,5 +1,5 @@
 <header class="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-700/60">
-    <div class="flex items-center justify-between gap-3 h-16 px-4 md:px-6">
+    <div class="flex items-center justify-between gap-1.5 md:gap-3 h-16 px-3 md:px-6">
         {{-- Toggle sidebar --}}
         <button @click="window.innerWidth < 768 ? $store.sidebar.toggleMobile() : $store.sidebar.toggle()"
                 class="p-2.5 rounded-xl hover:bg-primary-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-300 transition"
@@ -8,7 +8,7 @@
         </button>
 
         {{-- Search bar global --}}
-        <form action="{{ route('catalog.index') }}" method="get" class="flex-1 max-w-xl">
+        <form action="{{ route('catalog.index') }}" method="get" class="flex-1 max-w-xl min-w-0">
             <div class="relative group">
                 <i class="fas fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm group-focus-within:text-primary-500"></i>
                 <input type="text" name="q" value="{{ request('q') }}"
@@ -44,11 +44,12 @@
         {{-- Setting menu --}}
         @can('setting.manage')
         @php $primarySpot = \App\Models\ReadingSpot::orderBy('id')->first(); @endphp
-        <div class="relative hidden md:block" x-data="{ open: false }">
-            <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-primary-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-300 transition text-sm font-medium">
+        {{-- Tampil juga di mobile (icon-only) supaya fitur setting tidak hilang di HP --}}
+        <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" class="flex items-center gap-2 px-2.5 md:px-3 py-2 rounded-xl hover:bg-primary-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-300 transition text-sm font-medium">
                 <i class="fas fa-gear"></i>
                 <span class="hidden lg:inline">Setting</span>
-                <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                <i class="fas fa-chevron-down text-xs text-slate-400 hidden sm:inline"></i>
             </button>
             <div x-show="open" x-cloak @click.outside="open = false"
                  x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"

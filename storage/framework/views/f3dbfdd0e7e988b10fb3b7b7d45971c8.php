@@ -1,6 +1,9 @@
 <?php $__env->startSection('title', 'Katalog Buku'); ?>
 <?php $__env->startSection('content'); ?>
 
+
+<div class="<?php if(auth()->guard()->guest()): ?> container mx-auto px-4 py-6 md:py-8 <?php endif; ?>">
+
 <?php echo $__env->make('partials.page-header', [
     'icon'  => 'fa-compass',
     'title' => 'Katalog Publik',
@@ -95,6 +98,8 @@
     <?php endif; ?>
 </div>
 <div class="mt-8"><?php echo e($books->links()); ?></div>
+
+</div>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\web\Perpus\resources\views/catalog/index.blade.php ENDPATH**/ ?>

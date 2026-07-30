@@ -11,10 +11,14 @@
     ],
 ])
 
-<form method="get" class="card mb-6 grid md:grid-cols-4 gap-3">
+<form method="get" class="card mb-6 grid md:grid-cols-6 gap-3">
     <div class="md:col-span-2 relative">
         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
         <input name="q" value="{{ request('q') }}" placeholder="Nama spot..." class="form-input pl-10">
+    </div>
+    <div class="md:col-span-2 relative">
+        <i class="fas fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input name="loc" value="{{ request('loc') }}" placeholder="Cari lokasi: alamat, kota, provinsi..." class="form-input pl-10">
     </div>
     <select name="type" class="form-select">
         <option value="">Semua tipe</option>
@@ -27,8 +31,21 @@
             <option value="{{ $v }}" @selected(request('type')===$v)>{{ $t }}</option>
         @endforeach
     </select>
-    <button class="btn-primary"><i class="fas fa-filter"></i> Filter</button>
+    <div class="flex gap-2">
+        <button class="btn-primary flex-1"><i class="fas fa-filter"></i> Filter</button>
+        @if(request('q') || request('loc') || request('type'))
+            <a href="{{ route('reading-spots.index') }}" class="btn-secondary" title="Reset"><i class="fas fa-rotate-left"></i></a>
+        @endif
+    </div>
 </form>
+
+@if(request('loc'))
+    <p class="text-sm text-slate-500 mb-4 -mt-2">
+        <i class="fas fa-location-dot text-primary-500"></i>
+        Menampilkan reading spot di lokasi <span class="font-semibold text-slate-700 dark:text-slate-300">"{{ request('loc') }}"</span>
+        — {{ $spots->total() }} hasil
+    </p>
+@endif
 
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 @forelse($spots as $s)

@@ -1,6 +1,7 @@
-<header class="bg-gradient-to-r from-primary-600 to-primary-800 text-white sticky top-0 z-30 shadow-lg">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-        <a href="/" class="flex items-center gap-3">
+<header class="bg-gradient-to-r from-primary-600 to-primary-800 text-white sticky top-0 z-30 shadow-lg"
+        x-data="{ mobileNav: false }">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center gap-2">
+        <a href="/" class="flex items-center gap-3 min-w-0">
             @if(!empty($appProfile->logo))
                 <img src="{{ asset('storage/'.$appProfile->logo) }}" class="h-10 w-10 rounded-lg object-cover shadow" alt="Logo">
             @else
@@ -8,9 +9,9 @@
                     <i class="fas fa-book-open-reader"></i>
                 </div>
             @endif
-            <div>
-                <p class="font-bold text-lg leading-tight">{{ $appProfile->app_name ?? config('app.name') }}</p>
-                <p class="text-xs opacity-90">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
+            <div class="min-w-0">
+                <p class="font-bold text-base sm:text-lg leading-tight truncate">{{ $appProfile->app_name ?? config('app.name') }}</p>
+                <p class="text-xs opacity-90 truncate">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
             </div>
         </a>
         <nav class="hidden md:flex items-center gap-6 text-sm">
@@ -19,7 +20,7 @@
             <a href="/#spots" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-location-dot"></i> Lokasi</a>
             <a href="{{ route('visitors.history') }}" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-clock-rotate-left"></i> Histori</a>
         </nav>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
             <div class="hidden lg:flex items-center gap-1.5 text-xs bg-white/10 px-3 py-1.5 rounded-lg">
                 <i class="fas fa-users"></i>
                 <span>Pengunjung Bulan Ini : <b>{{ number_format(\App\Models\VisitorLog::monthCount()) }}</b>, Hari Ini : <b>{{ number_format(\App\Models\VisitorLog::todayCount()) }}</b></span>
@@ -65,10 +66,41 @@
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="bg-white text-primary-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-slate-100">
+                <a href="{{ route('login') }}" class="bg-white text-primary-700 px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm hover:bg-slate-100 whitespace-nowrap">
                     <i class="fas fa-right-to-bracket"></i> Masuk
                 </a>
             @endauth
+
+            {{-- Tombol menu mobile — nav desktop disembunyikan < md --}}
+            {{-- @click.stop: tanpa .stop, klik ini ikut tertangkap @click.outside
+                 milik panel di bawah dan menu langsung tertutup lagi --}}
+            <button @click.stop="mobileNav = !mobileNav" aria-label="Buka menu navigasi"
+                    class="md:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+                <i class="fas" :class="mobileNav ? 'fa-xmark' : 'fa-bars'"></i>
+            </button>
         </div>
     </div>
+
+    {{-- Panel navigasi mobile --}}
+    <nav x-show="mobileNav" x-cloak @click.outside="mobileNav = false"
+         class="md:hidden border-t border-white/15 bg-primary-700/95 backdrop-blur">
+        <div class="container mx-auto px-4 py-2 space-y-1 text-sm">
+            <a href="/" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 {{ request()->routeIs('home') ? 'bg-white/15 font-semibold' : '' }}">
+                <i class="fas fa-home w-5 text-center"></i> Beranda
+            </a>
+            <a href="{{ route('catalog.index') }}" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 {{ request()->routeIs('catalog.*') ? 'bg-white/15 font-semibold' : '' }}">
+                <i class="fas fa-compass w-5 text-center"></i> Katalog
+            </a>
+            <a href="/#spots" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10">
+                <i class="fas fa-location-dot w-5 text-center"></i> Lokasi
+            </a>
+            <a href="{{ route('visitors.history') }}" @click="mobileNav = false" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 {{ request()->routeIs('visitors.history*') ? 'bg-white/15 font-semibold' : '' }}">
+                <i class="fas fa-clock-rotate-left w-5 text-center"></i> Histori
+            </a>
+            <div class="flex items-center gap-2 px-3 py-2.5 text-xs border-t border-white/15 mt-1 opacity-90">
+                <i class="fas fa-users w-5 text-center"></i>
+                Pengunjung Bulan Ini : <b>{{ number_format(\App\Models\VisitorLog::monthCount()) }}</b>, Hari Ini : <b>{{ number_format(\App\Models\VisitorLog::todayCount()) }}</b>
+            </div>
+        </div>
+    </nav>
 </header>

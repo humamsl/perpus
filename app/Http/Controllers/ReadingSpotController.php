@@ -15,6 +15,10 @@ class ReadingSpotController extends Controller
     {
         $spots = ReadingSpot::withCount(['members','books','offlineBooks'])
             ->when($r->q, fn($q) => $q->where('name', 'like', "%{$r->q}%"))
+            ->when($r->loc, fn($q) => $q->where(fn($w) => $w
+                ->where('address', 'like', "%{$r->loc}%")
+                ->orWhere('city', 'like', "%{$r->loc}%")
+                ->orWhere('province', 'like', "%{$r->loc}%")))
             ->when($r->type, fn($q) => $q->where('type', $r->type))
             ->latest()->paginate(20)->withQueryString();
         return view('reading-spots.index', compact('spots'));
