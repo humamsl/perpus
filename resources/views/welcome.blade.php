@@ -18,7 +18,7 @@
                     </h1>
                     <p class="text-lg opacity-90 mb-8 max-w-lg">
                         Koleksi buku fisik &amp; digital terintegrasi, reservasi antrean, e-book reader,
-                        dan sistem multi-titik baca untuk sekolah, komunitas, dan perpustakaan umum.
+                        dan sistem multi-titik baca.
                     </p>
                     <div class="flex flex-wrap gap-3">
                         <a href="{{ route('catalog.index') }}" class="btn-accent shadow-lg">
