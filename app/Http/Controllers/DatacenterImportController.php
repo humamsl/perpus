@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Models\User;
 use App\Services\DatacenterClient;
+use App\Services\DatacenterSync;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -94,7 +95,8 @@ class DatacenterImportController extends Controller
                 $user = User::create([
                     'name'              => $siswa['nama_siswa'],
                     'email'             => $email,
-                    'password'          => Hash::make(Str::random(40)),
+                    // Password buangan — lihat DatacenterSync::THROWAWAY_PASSWORD_ROUNDS.
+                    'password'          => Hash::make(Str::random(40), ['rounds' => DatacenterSync::THROWAWAY_PASSWORD_ROUNDS]),
                     'email_verified_at' => now(),
                 ]);
                 $user->assignRole('student');

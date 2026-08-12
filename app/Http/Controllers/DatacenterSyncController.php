@@ -27,6 +27,11 @@ class DatacenterSyncController extends Controller
     {
         $this->authorize('create', \App\Models\Member::class);
 
+        // Sinkron pertama membuat ratusan/ribuan User+Member sekaligus. Beri ruang
+        // di atas max_execution_time default (30 detik) supaya proses tidak terputus
+        // di tengah jalan dan meninggalkan anggota yang tersinkron separuh.
+        @set_time_limit(600);
+
         $result = [
             'siswa_ok' => 0, 'siswa_total' => 0, 'siswa_errors' => [],
             'guru_ok' => 0, 'guru_total' => 0, 'guru_errors' => [],

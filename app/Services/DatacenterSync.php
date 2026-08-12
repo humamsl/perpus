@@ -20,6 +20,17 @@ use Illuminate\Support\Str;
  */
 class DatacenterSync
 {
+    /**
+     * Cost bcrypt untuk password buangan anggota hasil sinkron.
+     *
+     * Password ini TIDAK PERNAH bisa dipakai login (plaintext-nya acak 40 karakter
+     * lalu langsung dibuang; login siswa/guru diverifikasi live ke Data Center),
+     * jadi cost minimum sudah cukup. Dengan cost default (10) satu hash memakan
+     * ~85 ms — dikali ratusan siswa, sinkronisasi pertama pasti kena
+     * "Maximum execution time of 30 seconds exceeded" di Hash::make.
+     */
+    public const THROWAWAY_PASSWORD_ROUNDS = 4;
+
     public function upsertSiswa(array $data): Member
     {
         $rs = $data['rombel_sekarang'] ?? null;
@@ -81,7 +92,7 @@ class DatacenterSync
         $user = User::create([
             'name' => $name,
             'email' => $email ?: (Str::slug($nisNip, '').'@'.$emailFallbackDomain),
-            'password' => Hash::make(Str::random(40)),
+            'password' => Hash::make(Str::random(40), ['rounds' => self::THROWAWAY_PASSWORD_ROUNDS]),
             'email_verified_at' => now(),
         ]);
         $user->assignRole($role);
