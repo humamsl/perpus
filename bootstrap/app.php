@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             '2fa'        => \PragmaRX\Google2FALaravel\Middleware::class,
         ]);
         $middleware->web(append: [
+            \App\Http\Middleware\CheckLicense::class,
             \App\Http\Middleware\TrackVisitor::class,
         ]);
         $middleware->throttleApi();
