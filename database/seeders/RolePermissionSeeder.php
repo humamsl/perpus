@@ -31,8 +31,12 @@ class RolePermissionSeeder extends Seeder
         $super->syncPermissions(Permission::all());
         $admin->syncPermissions(Permission::whereNotIn('name',
             ['user.manage','setting.manage','backup.run'])->get());
+        // Staff = petugas sirkulasi di meja layanan: boleh menambah transaksi
+        // peminjaman (checkout.create) serta menambah & meng-import koleksi buku
+        // (book.create + book.import), tapi tetap tidak boleh mengubah/menghapus
+        // buku, mengelola user, atau mengubah pengaturan.
         $staff->syncPermissions([
-            'book.view','book.create','member.view','member.create',
+            'book.view','book.create','book.import','member.view','member.create',
             'checkout.create','checkout.manage','checkout.view',
             'fine.view','payment.record',
         ]);
