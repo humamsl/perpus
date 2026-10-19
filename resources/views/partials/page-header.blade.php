@@ -10,20 +10,23 @@
         ],
     ])
 --}}
-<div class="flex flex-wrap justify-between items-start gap-4 mb-5">
-    <div class="flex items-start gap-4">
+<div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+    <div class="flex items-center gap-4 min-w-0">
         @if(!empty($icon))
-        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-white flex items-center justify-center shadow-soft">
-            <i class="fas {{ $icon }} text-lg"></i>
+        <div class="group relative h-14 w-14 shrink-0 animate-scale-in">
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-700 blur-lg opacity-50 transition duration-500 group-hover:opacity-80"></div>
+            <div class="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-primary-400 via-primary-600 to-primary-800 text-white flex items-center justify-center shadow-hover ring-1 ring-white/20 transition duration-500 ease-spring group-hover:rotate-[-8deg] group-hover:scale-105">
+                <i class="fas {{ $icon }} text-xl"></i>
+            </div>
         </div>
         @endif
-        <div>
-            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ $title }}</h1>
-            @if(!empty($desc))<p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ $desc }}</p>@endif
+        <div class="min-w-0 animate-fade-up delay-1">
+            <h1 class="text-2xl md:text-[1.7rem] font-bold text-slate-900 dark:text-white leading-tight">{{ $title }}</h1>
+            @if(!empty($desc))<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ $desc }}</p>@endif
         </div>
     </div>
     @if(!empty($actions))
-    <div class="flex gap-2 flex-wrap">
+    <div class="flex gap-2 flex-wrap animate-fade-up delay-2">
         @foreach($actions as $a)
             @if(empty($a['can']) || auth()->user()->can($a['can']))
                 <a href="{{ $a['url'] }}" class="{{ $a['class'] ?? 'btn-secondary' }}">

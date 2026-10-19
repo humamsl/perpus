@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "digital-library",
-      "runtimeExecutable": "php",
-      "runtimeArgs": ["artisan", "serve", "--host=127.0.0.1", "--port=8234"],
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d D:\\laragon\\www\\web\\Perpus && set LICENSE_ENFORCE=false&& D:\\laragon\\bin\\php\\php-8.3.26-Win32-vs16-x64\\php.exe artisan serve --host=127.0.0.1 --port=8234"],
       "port": 8234
     }
   ]

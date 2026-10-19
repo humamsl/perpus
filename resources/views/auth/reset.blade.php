@@ -2,80 +2,46 @@
 @section('fullscreen', 'yes')
 @section('title','Reset Password')
 @section('content')
-<div class="min-h-screen flex bg-slate-50 dark:bg-slate-900">
-    {{-- Brand panel (desktop) --}}
-    <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-primary-600 to-primary-900 text-white p-12 flex-col justify-between relative overflow-hidden">
-        <div class="absolute -right-20 -top-20 w-96 h-96 bg-white/5 rounded-full"></div>
-        <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-white/5 rounded-full"></div>
+<x-auth-shell title="Reset Password" subtitle="Masukkan password baru untuk akun Anda."
+              heading='Atur Ulang <span class="font-serif-i text-gradient-light">Password</span>'
+              lead="Buat password baru yang kuat untuk menjaga keamanan akun perpustakaan Anda."
+              icon="fa-shield-halved">
 
-        <a href="/" class="flex items-center gap-3 relative z-10">
-            <div class="h-12 w-12 rounded-xl bg-white text-primary-600 flex items-center justify-center text-2xl shadow-lg">
-                <i class="fas fa-book-open-reader"></i>
+    <form method="POST" action="{{ route('password.update') }}" class="space-y-4">@csrf
+        <input type="hidden" name="token" value="{{ $token }}">
+        <div class="animate-fade-up delay-1">
+            <label class="form-label">Email</label>
+            <div class="relative">
+                <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="email" name="email" required autofocus
+                       placeholder="nama@email.com" class="form-input pl-10 !py-3">
             </div>
-            <div>
-                <p class="font-bold text-xl">Perpustakaan Digital</p>
-                <p class="text-xs opacity-90">Multi-Tenant Library Platform</p>
+        </div>
+        <div class="animate-fade-up delay-2">
+            <label class="form-label">Password Baru</label>
+            <div class="relative">
+                <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="password" name="password" required
+                       placeholder="••••••••" class="form-input pl-10 !py-3">
             </div>
+        </div>
+        <div class="animate-fade-up delay-3">
+            <label class="form-label">Konfirmasi Password</label>
+            <div class="relative">
+                <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="password" name="password_confirmation" required
+                       placeholder="••••••••" class="form-input pl-10 !py-3">
+            </div>
+        </div>
+        <button class="btn-primary w-full !text-base !py-3.5 animate-fade-up delay-4">
+            <i class="fas fa-key"></i> Reset Password
+        </button>
+    </form>
+
+    <x-slot:footer>
+        <a href="{{ route('login') }}" class="group inline-flex items-center gap-2 text-primary-600 dark:text-primary-300 font-semibold">
+            <i class="fas fa-arrow-left transition-transform duration-300 group-hover:-translate-x-1"></i> Kembali ke login
         </a>
-
-        <div class="relative z-10">
-            <h2 class="text-4xl font-extrabold mb-4">Atur Ulang Password</h2>
-            <p class="opacity-90 mb-8 text-lg">Buat password baru yang kuat untuk menjaga keamanan akun perpustakaan Anda.</p>
-        </div>
-
-        <p class="text-xs opacity-75 relative z-10">&copy; {{ date('Y') }} GarageLibrary. {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
-    </div>
-
-    {{-- Form --}}
-    <div class="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div class="w-full max-w-md">
-            <a href="/" class="flex items-center gap-2 lg:hidden mb-8 text-primary-600">
-                <i class="fas fa-book-open-reader text-2xl"></i>
-                <span class="font-bold text-lg">GarageLibrary</span>
-            </a>
-
-            <h1 class="text-3xl font-bold mb-2">Reset Password</h1>
-            <p class="text-slate-500 mb-6">Masukkan password baru untuk akun Anda.</p>
-
-            @if($errors->any())
-            <div class="badge-red mb-4 block py-2 px-3"><i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}</div>
-            @endif
-
-            <form method="POST" action="{{ route('password.update') }}" class="space-y-4">@csrf
-                <input type="hidden" name="token" value="{{ $token }}">
-                <div>
-                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Email</label>
-                    <div class="relative mt-1">
-                        <i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="email" name="email" required autofocus
-                               placeholder="nama@email.com" class="form-input pl-10">
-                    </div>
-                </div>
-                <div>
-                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Password Baru</label>
-                    <div class="relative mt-1">
-                        <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="password" name="password" required
-                               placeholder="••••••••" class="form-input pl-10">
-                    </div>
-                </div>
-                <div>
-                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Konfirmasi Password</label>
-                    <div class="relative mt-1">
-                        <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="password" name="password_confirmation" required
-                               placeholder="••••••••" class="form-input pl-10">
-                    </div>
-                </div>
-                <button class="btn-primary w-full text-base py-3">
-                    <i class="fas fa-key"></i> Reset Password
-                </button>
-            </form>
-
-            <p class="mt-6 text-center text-sm">
-                <a href="{{ route('login') }}" class="text-primary-600 font-semibold hover:underline"><i class="fas fa-arrow-left"></i> Kembali ke login</a>
-            </p>
-        </div>
-    </div>
-</div>
+    </x-slot:footer>
+</x-auth-shell>
 @endsection

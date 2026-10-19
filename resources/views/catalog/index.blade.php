@@ -13,10 +13,12 @@
 ])
 
 @guest
-<div class="card mb-6 bg-gradient-to-r from-primary-500 to-primary-700 text-white border-0">
-    <div class="flex flex-wrap items-center justify-between gap-4">
+<div class="card mb-6 overflow-hidden !bg-ink-950 text-white !ring-white/10 noise">
+    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-primary-600 via-primary-800 to-ink-950"></div>
+    <div aria-hidden="true" class="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-accent-400/25 blur-3xl animate-blob"></div>
+    <div class="relative flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-            <div class="h-11 w-11 shrink-0 rounded-full bg-white/15 flex items-center justify-center">
+            <div class="h-12 w-12 shrink-0 rounded-2xl bg-white/15 ring-1 ring-white/20 flex items-center justify-center animate-float">
                 <i class="fas fa-circle-info text-xl"></i>
             </div>
             <div>
@@ -67,18 +69,22 @@
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
     @forelse($books as $b)
         <a href="{{ route('catalog.show', $b) }}" class="group">
-            <div class="card-tight h-full flex flex-col hover:shadow-hover transition duration-200 group-hover:-translate-y-1">
-                <div class="aspect-[3/4] rounded-lg mb-3 overflow-hidden relative bg-gradient-to-br from-primary-100 to-primary-200 dark:from-slate-700 dark:to-slate-600">
+            <div class="card-tight h-full flex flex-col group-hover:shadow-hover group-hover:-translate-y-1">
+                <div class="book-3d aspect-[3/4] rounded-xl mb-3 overflow-hidden relative bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/40 dark:to-primary-800/20">
                     @if($b->cover)
-                        <img src="{{ asset('storage/'.$b->cover) }}" alt="Sampul {{ $b->title }}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
+                        <img src="{{ asset('storage/'.$b->cover) }}" alt="Sampul {{ $b->title }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-105" loading="lazy">
                     @else
-                        <div class="absolute inset-0 flex items-center justify-center text-primary-500 dark:text-slate-400">
-                            <i class="fas fa-book text-4xl"></i>
+                        <div class="absolute inset-0 flex items-center justify-center text-primary-500 dark:text-primary-300/70">
+                            <i class="fas fa-book text-4xl transition duration-500 ease-spring group-hover:scale-125 group-hover:rotate-[-8deg]"></i>
                         </div>
                     @endif
-                    <span class="absolute top-2 right-2 badge-green text-[10px] shadow-soft"><i class="fas fa-infinity"></i> Baca Gratis</span>
+                    <span class="absolute top-2 right-2 z-[3] rounded-full bg-white/85 px-2 py-0.5 text-[10px] font-bold text-emerald-700 shadow-soft backdrop-blur-md dark:bg-ink-950/70 dark:text-emerald-300"><i class="fas fa-infinity"></i> Baca Gratis</span>
+                    {{-- Tombol "Baca" muncul saat hover --}}
+                    <span class="absolute inset-x-2 bottom-2 z-[3] flex translate-y-3 items-center justify-center gap-1.5 rounded-lg bg-white/90 py-1.5 text-xs font-bold text-primary-700 opacity-0 shadow-lg backdrop-blur-md transition duration-500 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100 dark:bg-ink-950/80 dark:text-primary-200">
+                        <i class="fas fa-book-open"></i> Lihat Detail
+                    </span>
                 </div>
-                <p class="font-semibold text-sm line-clamp-2 group-hover:text-primary-600 transition" title="{{ $b->title }}">{{ $b->title }}</p>
+                <p class="font-semibold text-sm text-slate-800 dark:text-slate-100 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition" title="{{ $b->title }}">{{ $b->title }}</p>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{{ $b->authors->pluck('name')->join(', ') ?: 'Anonim' }}</p>
                 <div class="mt-auto pt-3 flex items-center justify-between gap-2 text-xs">
                     <span class="text-amber-500 font-semibold shrink-0"><i class="fas fa-star"></i> {{ $b->rating_avg ?: '-' }}</span>
@@ -90,8 +96,11 @@
         </a>
     @empty
         <div class="col-span-full card text-center py-16">
-            <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
-                <i class="fas fa-magnifying-glass text-2xl text-slate-400"></i>
+            <div class="relative mx-auto mb-5 h-20 w-20">
+                <span class="absolute inset-0 rounded-full bg-primary-400/20 animate-pulse-ring"></span>
+                <div class="relative h-20 w-20 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-400/20 dark:to-primary-600/10 flex items-center justify-center animate-float">
+                    <i class="fas fa-magnifying-glass text-2xl text-primary-500"></i>
+                </div>
             </div>
             <p class="font-semibold text-slate-600 dark:text-slate-300">Tidak ada buku ditemukan</p>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Coba kata kunci atau filter lain.</p>

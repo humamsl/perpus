@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         );
 
         // Branding (nama/logo/favicon/warna) dari AppProfile, dipakai di layout & welcome.
-        View::composer(['layouts.app', 'welcome'], function ($view) {
+        View::composer(['layouts.app', 'welcome', 'components.auth-shell'], function ($view) {
             $view->with('appProfile', AppProfile::current());
         });
     }
