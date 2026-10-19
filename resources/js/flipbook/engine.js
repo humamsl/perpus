@@ -9,7 +9,13 @@ import * as pdfjsLib from 'pdfjs-dist';
 import PdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?worker';
 import { PageFlip } from 'page-flip/dist/js/page-flip.module.js';
 
-pdfjsLib.GlobalWorkerOptions.workerPort = new PdfWorker();
+const worker = new PdfWorker();
+// PDF.js menunggu worker tanpa batas waktu; bila skrip worker gagal dimuat
+// (404/MIME salah) reader akan macet di layar memuat — ubah jadi error.
+const workerFailed = new Promise((_, reject) =>
+    worker.addEventListener('error', () => reject(new Error('Worker PDF.js gagal dimuat')), { once: true }));
+workerFailed.catch(() => {});
+pdfjsLib.GlobalWorkerOptions.workerPort = worker;
 
 const RENDER_RADIUS = 3;   // halaman di sekitar posisi aktif yang dirender lebih dulu
 const KEEP_RADIUS = 10;    // canvas di luar jarak ini dilepas agar PDF tebal tidak boros memori
@@ -18,7 +24,7 @@ const MAX_DPR = 2;
 export async function createFlipbook(stage, { url, startPage = 1, reducedMotion = false, onProgress, onFlip, onOrientation }) {
     const loadingTask = pdfjsLib.getDocument({ url });
     loadingTask.onProgress = ({ loaded, total }) => { if (total) onProgress?.(Math.min(1, loaded / total)); };
-    const pdf = await loadingTask.promise;
+    const pdf = await Promise.race([loadingTask.promise, workerFailed]);
     const total = pdf.numPages;
     const firstViewport = (await pdf.getPage(1)).getViewport({ scale: 1 });
     const ratio = firstViewport.height / firstViewport.width;

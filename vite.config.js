@@ -10,4 +10,11 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    experimental: {
+        // URL aset di dalam bundle (font di CSS, worker PDF.js, chunk lazy) dibuat
+        // relatif terhadap file yang memuatnya. Tanpa ini Vite menulis "/build/assets/..."
+        // yang 404 bila aplikasi dipasang di subpath (mis. domain.id/perpus).
+        renderBuiltUrl: (filename, { hostType }) =>
+            hostType === 'js' || hostType === 'css' ? { relative: true } : undefined,
+    },
 });
