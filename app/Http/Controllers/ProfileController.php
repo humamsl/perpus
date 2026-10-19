@@ -27,9 +27,9 @@ class ProfileController extends Controller
     {
         $r->validate([
             'current_password' => 'required|current_password',
-            'password'         => 'required|string|min:8|confirmed',
-        ]);
-        $r->user()->update(['password' => Hash::make($r->password)]);
+            'password'         => 'required|string|min:8|confirmed|different:current_password',
+        ], ['password.different' => 'Password baru harus berbeda dari password lama.']);
+        $r->user()->forceFill(['password' => Hash::make($r->password), 'must_change_password' => false])->save();
         return back()->with('toast', 'Password berhasil diubah.');
     }
 

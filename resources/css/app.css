@@ -300,6 +300,44 @@
         transform: translateX(-100%); transition: transform .9s var(--ease-out-expo); }
     .group:hover .book-3d { transform: perspective(900px) rotateY(-14deg) translateY(-6px); box-shadow: 18px 22px 40px -14px rgba(46,16,101,.45); }
     .group:hover .book-3d::after { transform: translateX(100%); }
+
+    /* ───────────── Reader flip book (views/ebooks/read.blade.php) ───────────── */
+    /* Lebar panggung dibatasi tinggi layar: --fb-ratio (tinggi/lebar halaman PDF)
+       diisi komponen Alpine, --fb-chrome = tinggi topbar + judul + toolbar. */
+    .flipbook { --fb-chrome: 300px; --fb-ratio: 1.414; }
+    .flipbook.is-fullscreen { --fb-chrome: 110px; @apply flex flex-col justify-center bg-slate-100 p-4 dark:bg-ink-950; }
+    .flipbook-viewport { @apply relative flex min-h-[50vh] items-center justify-center px-1 pt-2 pb-4 md:px-14; }
+    .flipbook-stage { width: 100%; margin-inline: auto; max-width: calc((100dvh - var(--fb-chrome)) / var(--fb-ratio) * 2); }
+    /* 30rem = 2 × minWidth StPageFlip, agar bisa kembali ke landscape saat layar melebar */
+    .flipbook-stage.is-portrait { max-width: max(30rem, calc((100dvh - var(--fb-chrome)) / var(--fb-ratio))); }
+    .flipbook-stage .stf__wrapper { filter: drop-shadow(0 18px 30px rgba(46,16,101,.22)); }
+    .dark .flipbook-stage .stf__wrapper { filter: drop-shadow(0 18px 34px rgba(0,0,0,.6)); }
+
+    .flipbook-page { overflow: hidden; background: #fff; user-select: none; }
+    .flipbook-page canvas { display: block; width: 100%; height: 100%; }
+    .flipbook-page-num { @apply absolute bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-slate-400; }
+    .flipbook-page.is-ready .flipbook-page-num { display: none; }
+    /* Shimmer selama halaman belum dirender */
+    .flipbook-page:not(.is-ready)::after {
+        content: ''; position: absolute; inset: 0; pointer-events: none;
+        background: linear-gradient(100deg, transparent 30%, rgba(139,92,246,.08) 50%, transparent 70%) 0 0 / 200% 100%;
+        animation: gradient-x 1.6s linear infinite;
+    }
+    /* Bayangan lipatan tengah (punggung buku) */
+    .flipbook-page::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .stf__wrapper.--landscape .flipbook-page.--left::before  { background: linear-gradient(to left, rgba(0,0,0,.16), rgba(0,0,0,.04) 4%, transparent 9%); }
+    .stf__wrapper.--landscape .flipbook-page.--right::before { background: linear-gradient(to right, rgba(0,0,0,.16), rgba(0,0,0,.04) 4%, transparent 9%); }
+    .flipbook-page.--hard::before { box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), inset 0 0 24px rgba(46,16,101,.10); }
+
+    .flipbook-nav {
+        @apply absolute top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-slate-600 shadow-soft ring-1 ring-slate-900/5 backdrop-blur-sm
+               transition-all duration-300 ease-out-expo hover:scale-110 hover:text-primary-600 active:scale-95
+               dark:bg-white/10 dark:text-slate-200 dark:ring-white/10 dark:hover:text-white;
+    }
+    .flipbook-toolbar { @apply flex items-center justify-between gap-1 sm:gap-2 border-t border-slate-100 pt-2 dark:border-white/5; }
+    .flipbook-toolbar .icon-btn:disabled { @apply pointer-events-none opacity-40; }
+    .flipbook-toolbar input[type=number] { -moz-appearance: textfield; }
+    .flipbook-toolbar input::-webkit-inner-spin-button { -webkit-appearance: none; }
 }
 
 @layer utilities {

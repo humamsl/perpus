@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'audit'      => \App\Http\Middleware\AuditLog::class,
             '2fa'        => \PragmaRX\Google2FALaravel\Middleware::class,
+            'mustchangepw' => \App\Http\Middleware\ForcePasswordChange::class,
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\CheckLicense::class,

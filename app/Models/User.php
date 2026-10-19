@@ -29,6 +29,7 @@ class User extends Authenticatable
             'password'           => 'hashed',
             'two_factor_enabled' => 'boolean',
             'is_active'          => 'boolean',
+            'must_change_password' => 'boolean',
             'last_login_at'      => 'datetime',
         ];
     }

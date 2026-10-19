@@ -2,6 +2,7 @@ import './bootstrap';
 import Alpine from 'alpinejs';
 import Chart from 'chart.js/auto';
 import { initMotion } from './motion';
+import flipbook from './flipbook/component';
 
 window.Alpine = Alpine;
 window.Chart = Chart;
@@ -78,6 +79,9 @@ document.addEventListener('alpine:init', () => {
     desktopQuery.addEventListener('change', (e) => {
         Alpine.store('sidebar').isDesktop = e.matches;
     });
+
+    // Reader PDF flip book (mesin PDF.js dimuat lazy hanya di halaman baca)
+    Alpine.data('flipbook', flipbook);
 
     Alpine.data('toast', () => ({
         items: [],

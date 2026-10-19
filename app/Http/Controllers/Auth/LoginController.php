@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\LoginLockout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
@@ -19,9 +20,19 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
+        LoginLockout::ensureNotLocked($creds['email'], 'email');
+
         if (!Auth::attempt($creds, $r->boolean('remember'))) {
+            LoginLockout::failed($r, $creds['email'], 'web');
             throw ValidationException::withMessages(['email' => 'Email atau password salah.']);
         }
+
+        if (! $r->user()->is_active) {
+            Auth::logout();
+            throw ValidationException::withMessages(['email' => 'Akun ini dinonaktifkan. Hubungi admin perpustakaan.']);
+        }
+
+        LoginLockout::succeeded($creds['email']);
         $r->session()->regenerate();
         $r->user()->forceFill([
             'last_login_at' => now(),

@@ -120,13 +120,6 @@
             </div>
         </div>
 
-        
-        <a href="#koleksi" class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 md:flex flex-col items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-white/50 hover:text-white transition">
-            Scroll
-            <span class="flex h-9 w-5 justify-center rounded-full ring-1 ring-white/30 pt-1.5">
-                <span class="h-2 w-1 rounded-full bg-white/70 animate-bounce"></span>
-            </span>
-        </a>
 
         
         <svg aria-hidden="true" class="absolute -bottom-px left-0 w-full text-[var(--page)]" viewBox="0 0 1440 60" preserveAspectRatio="none" style="height:60px">

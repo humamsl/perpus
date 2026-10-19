@@ -91,7 +91,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->
 | 'audit' middleware mencatat semua aksi non-GET ke activity_logs
 */
 
-Route::middleware(['auth', 'verified', 'audit'])->group(function () {
+Route::middleware(['auth', 'verified', 'mustchangepw', 'audit'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

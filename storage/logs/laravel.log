@@ -8225,3 +8225,10 @@ operable program or batch file.
 #83 C:/laragon/www/web/Perpus/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://laragon//www//...')
 #84 {main}
 "} 
+[2026-10-19 14:37:30] local.WARNING: admin:reset-credentials dijalankan {"app":"perpus","school":"smpn40","primary":{"id":1,"email":"admin@smpn40.com"},"accounts":[{"id":1,"email":"admin@smpn40.com","action":"admin utama"},{"id":2,"email":"libadmin@library.test","action":"password acak"},{"id":264,"email":"admin@library.test","action":"password acak"}],"sessions_deleted":4,"tokens_deleted":0,"os_user":"AnonuymouSL"} 
+[2026-10-19 14:38:01] local.WARNING: Login gagal {"email":"libadmin@library.test","channel":"web","user_agent":"curl/8.21.0","ip":"127.0.0.1","user_id":2} 
+[2026-10-19 14:38:13] local.WARNING: Login gagal {"email":"libadmin@library.test","channel":"web","user_agent":"curl/8.21.0","ip":"127.0.0.1","user_id":2} 
+[2026-10-19 14:38:15] local.WARNING: Login gagal {"email":"libadmin@library.test","channel":"api","user_agent":"curl/8.21.0","ip":"127.0.0.1","user_id":2} 
+[2026-10-19 14:38:27] local.WARNING: Login gagal {"email":"libadmin@library.test","channel":"web","user_agent":"curl/8.21.0","ip":"127.0.0.1","user_id":2} 
+[2026-10-19 14:38:30] local.WARNING: Login gagal {"email":"libadmin@library.test","channel":"web","user_agent":"curl/8.21.0","ip":"127.0.0.1","user_id":2} 
+[2026-10-19 14:38:48] local.WARNING: admin:reset-credentials dijalankan {"app":"perpus","school":"smpn40","primary":{"id":1,"email":"admin@smpn40.com"},"accounts":[{"id":1,"email":"admin@smpn40.com","action":"admin utama"},{"id":2,"email":"libadmin@library.test","action":"NONAKTIFKAN"},{"id":264,"email":"admin@library.test","action":"NONAKTIFKAN"}],"sessions_deleted":1,"tokens_deleted":1,"os_user":"AnonuymouSL"} 
