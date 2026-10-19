@@ -10,9 +10,81 @@
 @import '@fontsource/instrument-serif/400.css';
 @import '@fontsource/instrument-serif/400-italic.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 — konfigurasi CSS-first. tailwind.config.js TIDAK lagi dibaca;
+   semua token tema ada di blok @theme di bawah. */
+@import 'tailwindcss' source(none);
+@source '../views';
+@source '../js';
+@source '../../app';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* Dark mode berbasis class .dark (bukan prefers-color-scheme) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-primary-50: #f5f3ff;
+    --color-primary-100: #ede9fe;
+    --color-primary-200: #ddd6fe;
+    --color-primary-300: #c4b5fd;
+    --color-primary-400: #a78bfa;
+    --color-primary-500: #8b5cf6;
+    --color-primary-600: #7c3aed;
+    --color-primary-700: #6d28d9;
+    --color-primary-800: #5b21b6;
+    --color-primary-900: #4c1d95;
+    --color-primary-950: #2e1065;
+
+    --color-accent-300: #5eead4;
+    --color-accent-400: #2dd4bf;
+    --color-accent-500: #14b8a6;
+    --color-accent-600: #0d9488;
+
+    --color-gold-300: #fcd34d;
+    --color-gold-400: #fbbf24;
+    --color-gold-500: #f59e0b;
+
+    --color-ink: #1a1730;
+    --color-ink-900: #0f0d1f;
+    --color-ink-950: #08071a;
+
+    --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui;
+    --font-display: 'Sora', 'Plus Jakarta Sans', ui-sans-serif;
+    --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+
+    --shadow-soft: 0 1px 2px rgba(46,16,101,0.05), 0 8px 24px -6px rgba(46,16,101,0.08);
+    --shadow-hover: 0 20px 45px -12px rgba(109,40,217,0.30);
+    --shadow-glow: 0 0 0 4px rgba(139,92,246,0.18);
+    --shadow-glow-lg: 0 0 40px -6px rgba(139,92,246,0.55);
+    --shadow-inner: inset 0 1px 0 0 rgba(255,255,255,0.08);
+
+    --ease-out-expo: cubic-bezier(.16,1,.3,1);
+    --ease-spring: cubic-bezier(.34,1.56,.64,1);
+
+    --animate-fade-up: fade-up .7s cubic-bezier(.16,1,.3,1) both;
+    --animate-fade-in: fade-in .6s ease both;
+    --animate-scale-in: scale-in .5s cubic-bezier(.16,1,.3,1) both;
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-float-rot: float-rot 7s ease-in-out infinite;
+    --animate-spin-slow: spin-slow 18s linear infinite;
+    --animate-marquee: marquee 40s linear infinite;
+    --animate-gradient-x: gradient-x 8s ease infinite;
+    --animate-blob: blob 18s ease-in-out infinite;
+    --animate-pulse-ring: pulse-ring 1.8s cubic-bezier(.2,.6,.4,1) infinite;
+    --animate-wiggle: wiggle .5s ease-in-out;
+
+    @keyframes fade-up   { 0% { opacity: 0; transform: translateY(18px); } 100% { opacity: 1; transform: none; } }
+    @keyframes fade-in   { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes scale-in  { 0% { opacity: 0; transform: scale(.94); } 100% { opacity: 1; transform: none; } }
+    @keyframes float     { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+    @keyframes float-rot { 0%,100% { transform: translateY(0) rotate(var(--r,0deg)); } 50% { transform: translateY(-16px) rotate(calc(var(--r,0deg) + 2deg)); } }
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+    @keyframes marquee   { to { transform: translateX(-50%); } }
+    @keyframes blob      { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(30px,-40px) scale(1.08); } 66% { transform: translate(-25px,20px) scale(.95); } }
+    @keyframes pulse-ring { 0% { transform: scale(.8); opacity: .7; } 100% { transform: scale(2.2); opacity: 0; } }
+    @keyframes wiggle    { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+}
 
 /* Transisi antar halaman native (Chromium 126+). Browser lain cukup abaikan. */
 @view-transition { navigation: auto; }
@@ -22,9 +94,13 @@
 @keyframes vt-in  { from { opacity: 0; transform: translateY(10px); } }
 
 @layer base {
+    /* Kompatibilitas v3: v4 mengubah default border jadi currentColor,
+       placeholder jadi 50% currentColor, dan tombol tanpa cursor pointer. */
+    *, ::after, ::before, ::backdrop, ::file-selector-button { border-color: var(--color-gray-200, currentColor); }
+    input::placeholder, textarea::placeholder { color: var(--color-gray-400); }
+    button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+
     :root {
-        --ease-out: cubic-bezier(.16,1,.3,1);
-        --ease-spring: cubic-bezier(.34,1.56,.64,1);
         --surface: 255 255 255;
         --page: #f5f4fb;
     }
@@ -58,44 +134,46 @@
 }
 
 @layer components {
-    /* ───────────── Tombol ───────────── */
-    .btn {
+    /* ───────────── Tombol ─────────────
+       v4 tidak bisa `@apply btn` (class komponen), jadi gaya dasar dibagi
+       lewat daftar selector — hasilnya sama seperti @apply di v3. */
+    .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-accent, .btn-ghost {
         @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl px-4 py-2.5 text-sm font-semibold
                transition-all duration-300 ease-out-expo focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
                active:scale-[.97] disabled:pointer-events-none disabled:opacity-60 dark:focus-visible:ring-offset-ink-950;
     }
-    .btn > i { @apply transition-transform duration-300 ease-spring; }
-    .btn:hover > i { transform: translateX(1px) scale(1.12); }
+    :is(.btn, .btn-primary, .btn-secondary, .btn-danger, .btn-accent, .btn-ghost) > i { @apply transition-transform duration-300 ease-spring; }
+    :is(.btn, .btn-primary, .btn-secondary, .btn-danger, .btn-accent, .btn-ghost):hover > i { transform: translateX(1px) scale(1.12); }
     /* kilau menyapu saat hover */
     .btn-primary::after, .btn-accent::after, .btn-danger::after {
         content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
         background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
-        transform: translateX(-120%); transition: transform .8s var(--ease-out);
+        transform: translateX(-120%); transition: transform .8s var(--ease-out-expo);
     }
     .btn-primary:hover::after, .btn-accent:hover::after, .btn-danger:hover::after { transform: translateX(120%); }
 
     .btn-primary {
-        @apply btn text-white shadow-soft hover:-translate-y-0.5 hover:shadow-hover focus-visible:ring-primary-400;
+        @apply text-white shadow-soft hover:-translate-y-0.5 hover:shadow-hover focus-visible:ring-primary-400;
         background-image: linear-gradient(135deg,#a78bfa 0%,#7c3aed 45%,#5b21b6 100%);
         background-size: 160% 160%; background-position: 0% 50%;
     }
     .btn-primary:hover { background-position: 100% 50%; }
     .btn-secondary {
-        @apply btn bg-white/90 text-slate-700 ring-1 ring-slate-200 backdrop-blur hover:-translate-y-0.5 hover:bg-white hover:text-primary-700 hover:ring-primary-300 hover:shadow-soft
+        @apply bg-white/90 text-slate-700 ring-1 ring-slate-200 backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:text-primary-700 hover:ring-primary-300 hover:shadow-soft
                dark:bg-white/5 dark:text-slate-100 dark:ring-white/10 dark:hover:bg-white/10 dark:hover:text-white dark:hover:ring-primary-400/40;
     }
     .btn-danger {
-        @apply btn text-white hover:-translate-y-0.5 focus-visible:ring-red-400;
+        @apply text-white hover:-translate-y-0.5 focus-visible:ring-red-400;
         background-image: linear-gradient(135deg,#fb7185,#e11d48);
         box-shadow: 0 10px 24px -10px rgba(225,29,72,.55);
     }
     .btn-accent {
-        @apply btn text-white hover:-translate-y-0.5 focus-visible:ring-accent-400;
+        @apply text-white hover:-translate-y-0.5 focus-visible:ring-accent-400;
         background-image: linear-gradient(135deg,#5eead4,#14b8a6 50%,#0f766e);
         box-shadow: 0 10px 24px -10px rgba(13,148,136,.6);
     }
     .btn-ghost {
-        @apply btn text-slate-600 hover:bg-primary-50 hover:text-primary-700 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white;
+        @apply text-slate-600 hover:bg-primary-50 hover:text-primary-700 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white;
     }
 
     /* ───────────── Kartu ───────────── */
@@ -136,7 +214,7 @@
 
     /* ───────────── Form ───────────── */
     .form-input, .form-select, .form-textarea {
-        @apply block w-full rounded-xl border border-slate-200 bg-white/80 px-3.5 py-2.5 text-sm text-slate-800 shadow-sm transition-all duration-300 ease-out-expo
+        @apply block w-full rounded-xl border border-slate-200 bg-white/80 px-3.5 py-2.5 text-sm text-slate-800 shadow-xs transition-all duration-300 ease-out-expo
                placeholder:text-slate-400 hover:border-slate-300
                focus:border-primary-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-400/15
                disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400
@@ -156,23 +234,23 @@
     .relative:focus-within > i.fas, .relative:focus-within > i.fa-solid { @apply text-primary-500; transition: color .3s; }
 
     /* ───────────── Badge ───────────── */
-    .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset; }
-    .badge-green  { @apply badge bg-emerald-50 text-emerald-700 ring-emerald-600/15 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20; }
-    .badge-yellow { @apply badge bg-amber-50 text-amber-800 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20; }
-    .badge-red    { @apply badge bg-rose-50 text-rose-700 ring-rose-600/15 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20; }
-    .badge-blue   { @apply badge bg-primary-50 text-primary-700 ring-primary-600/15 dark:bg-primary-400/10 dark:text-primary-300 dark:ring-primary-400/20; }
-    .badge-gray   { @apply badge bg-slate-50 text-slate-600 ring-slate-500/15 dark:bg-white/5 dark:text-slate-300 dark:ring-white/10; }
+    .badge, .badge-green, .badge-yellow, .badge-red, .badge-blue, .badge-gray { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset; }
+    .badge-green  { @apply bg-emerald-50 text-emerald-700 ring-emerald-600/15 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20; }
+    .badge-yellow { @apply bg-amber-50 text-amber-800 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20; }
+    .badge-red    { @apply bg-rose-50 text-rose-700 ring-rose-600/15 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20; }
+    .badge-blue   { @apply bg-primary-50 text-primary-700 ring-primary-600/15 dark:bg-primary-400/10 dark:text-primary-300 dark:ring-primary-400/20; }
+    .badge-gray   { @apply bg-slate-50 text-slate-600 ring-slate-500/15 dark:bg-white/5 dark:text-slate-300 dark:ring-white/10; }
 
     /* ───────────── Tabel ───────────── */
     .table-pretty { @apply min-w-full text-sm; }
-    .table-pretty thead { @apply bg-gradient-to-r from-primary-50/80 to-transparent dark:from-white/[.04]; }
+    .table-pretty thead { @apply bg-linear-to-r from-primary-50/80 to-transparent dark:from-white/[.04]; }
     .table-pretty th { @apply px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-primary-800/70 dark:text-slate-400; }
     .table-pretty td { @apply px-4 py-3 border-t border-slate-100 dark:border-white/[.05]; }
-    .table-pretty tbody tr { @apply transition-colors duration-200 hover:bg-primary-50/60 dark:hover:bg-white/[.03]; animation: row-in .55s var(--ease-out) both; }
-    .table-pretty tbody tr td:first-child { box-shadow: inset 0 0 0 0 #8b5cf6; transition: box-shadow .25s var(--ease-out); }
+    .table-pretty tbody tr { @apply transition-colors duration-200 hover:bg-primary-50/60 dark:hover:bg-white/[.03]; animation: row-in .55s var(--ease-out-expo) both; }
+    .table-pretty tbody tr td:first-child { box-shadow: inset 0 0 0 0 #8b5cf6; transition: box-shadow .25s var(--ease-out-expo); }
     .table-pretty tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 0 #8b5cf6; }
 
-    .skeleton { @apply relative overflow-hidden rounded bg-slate-200 dark:bg-white/5; }
+    .skeleton { @apply relative overflow-hidden rounded-sm bg-slate-200 dark:bg-white/5; }
     .skeleton::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); animation: shimmer 1.6s infinite; }
 
     /* ───────────── Teks ───────────── */
@@ -189,7 +267,7 @@
     .font-serif-i { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
 
     /* Garis bawah animasi untuk tautan */
-    .link-anim { @apply relative; background: linear-gradient(currentColor,currentColor) left bottom / 0 1.5px no-repeat; transition: background-size .4s var(--ease-out); }
+    .link-anim { @apply relative; background: linear-gradient(currentColor,currentColor) left bottom / 0 1.5px no-repeat; transition: background-size .4s var(--ease-out-expo); }
     .link-anim:hover { background-size: 100% 1.5px; }
 
     /* ───────────── Sidebar / shell ───────────── */
@@ -198,8 +276,8 @@
        beberapa versi Chromium gagal invalidate rule @media saat class-nya diubah
        lewat reactivity Alpine setelah render awal, membuat sidebar menutupi konten.
        Transition di sini tetap berlaku karena berlaku permanen (tidak bersyarat class). */
-    .app-shell { transition: margin-left .35s var(--ease-out); }
-    .app-sidebar { transition: width .35s var(--ease-out), transform .35s var(--ease-out); }
+    .app-shell { transition: margin-left .35s var(--ease-out-expo); }
+    .app-sidebar { transition: width .35s var(--ease-out-expo), transform .35s var(--ease-out-expo); }
     .nav-link { @apply relative flex items-center gap-3 rounded-xl px-3 py-2.5 mx-2.5 my-0.5 font-medium text-slate-400 transition-all duration-300 ease-out-expo; }
     .nav-link:hover { @apply bg-white/[.05] text-white; }
     .nav-link:hover > i { transform: scale(1.15) rotate(-6deg); }
@@ -214,19 +292,19 @@
     .icon-btn { @apply relative grid h-10 w-10 place-items-center rounded-xl text-slate-500 transition-all duration-300 hover:bg-primary-50 hover:text-primary-600 active:scale-90 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white; }
 
     /* Buku 3D (dipakai di katalog/carousel) */
-    .book-3d { transform-style: preserve-3d; transition: transform .6s var(--ease-out), box-shadow .6s var(--ease-out); }
+    .book-3d { transform-style: preserve-3d; transition: transform .6s var(--ease-out-expo), box-shadow .6s var(--ease-out-expo); }
     .book-3d::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 8px; z-index: 2; border-radius: inherit;
         background: linear-gradient(90deg, rgba(0,0,0,.25), rgba(255,255,255,.15) 40%, transparent); pointer-events: none; }
     .book-3d::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
         background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.45) 50%, transparent 65%);
-        transform: translateX(-100%); transition: transform .9s var(--ease-out); }
+        transform: translateX(-100%); transition: transform .9s var(--ease-out-expo); }
     .group:hover .book-3d { transform: perspective(900px) rotateY(-14deg) translateY(-6px); box-shadow: 18px 22px 40px -14px rgba(46,16,101,.45); }
     .group:hover .book-3d::after { transform: translateX(100%); }
 }
 
 @layer utilities {
     /* Scroll reveal (diaktifkan motion.js lewat class .is-in) */
-    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ease-out) var(--d,0ms), transform .8s var(--ease-out) var(--d,0ms), box-shadow .5s var(--ease-out); }
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ease-out-expo) var(--d,0ms), transform .8s var(--ease-out-expo) var(--d,0ms), box-shadow .5s var(--ease-out-expo); }
     .reveal.reveal-left  { transform: translateX(-28px); }
     .reveal.reveal-right { transform: translateX(28px); }
     .reveal.reveal-scale { transform: scale(.94); }
@@ -261,6 +339,7 @@
 @keyframes ripple { to { transform: translate(-50%,-50%) scale(1); opacity: 0; } }
 @keyframes toast-bar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 @keyframes page-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes bar-grow { from { transform: scaleX(0); } }
 
 /* Stagger baris tabel tanpa JS */
 .table-pretty tbody tr:nth-child(1){animation-delay:.02s}.table-pretty tbody tr:nth-child(2){animation-delay:.05s}
@@ -269,11 +348,11 @@
 .table-pretty tbody tr:nth-child(7){animation-delay:.20s}.table-pretty tbody tr:nth-child(8){animation-delay:.23s}
 .table-pretty tbody tr:nth-child(9){animation-delay:.26s}.table-pretty tbody tr:nth-child(n+10){animation-delay:.29s}
 
-.page-enter { animation: page-in .7s var(--ease-out) backwards; }
+.page-enter { animation: page-in .7s var(--ease-out-expo) backwards; }
 
 /* Ripple klik tombol (span dibuat motion.js) */
 .ripple-dot { position: absolute; border-radius: 9999px; pointer-events: none; background: currentColor; opacity: .25;
-    width: 260%; aspect-ratio: 1; transform: translate(-50%,-50%) scale(0); animation: ripple .65s var(--ease-out) forwards; }
+    width: 260%; aspect-ratio: 1; transform: translate(-50%,-50%) scale(0); animation: ripple .65s var(--ease-out-expo) forwards; }
 
 /* Progress bar navigasi di atas layar */
 #nprogress { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 100; pointer-events: none; transform-origin: left;
@@ -292,4 +371,3 @@
     .reveal, .table-pretty tbody tr, .page-enter { opacity: 1 !important; transform: none !important; animation: none !important; }
     #nprogress, .spotlight::before { display: none !important; }
 }
-@keyframes bar-grow { from { transform: scaleX(0); } }

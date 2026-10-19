@@ -35,7 +35,7 @@
     <div x-show="$store.sidebar.mobileOpen" x-cloak
          @click="$store.sidebar.mobileOpen = false"
          x-transition.opacity.duration.300ms
-         class="md:hidden fixed inset-0 bg-ink-950/60 backdrop-blur-sm z-30"></div>
+         class="md:hidden fixed inset-0 bg-ink-950/60 backdrop-blur-xs z-30"></div>
 
     <div class="app-shell flex-1 min-h-screen min-w-0 flex flex-col"
          :style="{ marginLeft: $store.sidebar.isDesktop ? ($store.sidebar.open ? '16.5rem' : '4.5rem') : '0' }">

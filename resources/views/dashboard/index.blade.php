@@ -278,7 +278,7 @@
             @forelse($popular as $i => $b)
                 @php $medal = [0 => 'from-gold-300 to-amber-500 text-amber-950', 1 => 'from-slate-200 to-slate-400 text-slate-800', 2 => 'from-orange-300 to-orange-600 text-orange-950'][$i] ?? 'from-primary-50 to-primary-100 text-primary-700 dark:from-white/5 dark:to-white/10 dark:text-primary-300'; @endphp
                 <li class="group flex items-center gap-3 rounded-xl p-2 -mx-2 transition hover:bg-primary-50/70 dark:hover:bg-white/[.03]">
-                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br {{ $medal }} text-xs font-bold shadow-sm transition duration-500 ease-spring group-hover:scale-110 group-hover:rotate-[-8deg]">{{ $i+1 }}</span>
+                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br {{ $medal }} text-xs font-bold shadow-xs transition duration-500 ease-spring group-hover:scale-110 group-hover:rotate-[-8deg]">{{ $i+1 }}</span>
                     <div class="flex-1 min-w-0">
                         <p class="font-semibold text-sm truncate text-slate-800 dark:text-slate-100">{{ $b->title }}</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -314,7 +314,7 @@
                     <td><span class="font-mono text-xs rounded-md bg-slate-100 px-2 py-1 dark:bg-white/5">{{ $t->code }}</span></td>
                     <td>
                         <div class="flex items-center gap-2.5">
-                            <span class="h-8 w-8 shrink-0 rounded-xl bg-gradient-to-br from-primary-400 to-primary-700 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                            <span class="h-8 w-8 shrink-0 rounded-xl bg-gradient-to-br from-primary-400 to-primary-700 text-white flex items-center justify-center text-xs font-bold shadow-xs">
                                 {{ strtoupper(substr($t->user?->name ?? '?', 0, 1)) }}
                             </span>
                             <span class="font-medium text-slate-800 dark:text-slate-100">{{ $t->user?->name ?? '-' }}</span>
